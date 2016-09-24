@@ -84,3 +84,44 @@ class AngrRemoveImports(Transformer):
         for r in remove:
             graph.remove_node(r)
 
+
+
+class AngrRemoveFakeretEdges(Transformer):
+    def __init__(self):
+        pass
+        
+    def transform(self, graph):
+        remove = []
+        for e in graph.edges:
+            if e.meta['jumpkind'] == 'Ijk_FakeRet':
+                remove.append(e)
+        for r in remove:
+            graph.remove_edge(r)
+
+class AngrAddEdges(Transformer):
+    def __init__(self, graph, reverse=False, color=None, label=None, style=None, width=None, weight=None):
+        self.graph = graph
+        self.reverse = reverse
+        self.color = color
+        self.label = label
+        self.style = style
+        self.width = width
+        self.weight = weight
+
+    def transform(self, graph):
+        lookup = {}
+        for n in graph.nodes:
+            lookup[n.obj] = n
+        
+        for s,t in self.graph.edges():
+            #TODO option to add missing nodes (?)
+            try: 
+                if self.reverse:
+                    ss,tt = lookup[t],lookup[s]
+                else:
+                    ss,tt = lookup[s],lookup[t]
+                
+                graph.add_edge(Edge(ss, tt, color=self.color, label=self.label, style=self.style, width=self.width, weight=self.weight))
+            except:
+                #FIXME WARN
+                pass
