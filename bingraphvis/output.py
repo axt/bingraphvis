@@ -113,6 +113,8 @@ class DotOutput(Output):
             attrs['style'] = e.style
         if e.width:
             attrs['penwidth'] = str(e.width)
+        if e.weight:
+            attrs['weight'] = str(e.weight)
 
         return "%d -> %d %s" % (e.src.seq, e.dst.seq, self.render_attributes(default_node_attributes, attrs))
         
@@ -121,7 +123,7 @@ class DotOutput(Output):
         ret += "rankdir=TB;\n"
         
         #TODO
-        #for n in sorted(self.vis.nodes, key=lambda n: n.obj.addr):
+        #for n in sorted(graph.nodes, key=lambda n: n.obj.addr):
         for n in graph.nodes:
             ret += self.render_node(n) + "\n"
         

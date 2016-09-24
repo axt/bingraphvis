@@ -15,7 +15,7 @@ class Node(object):
         self.fillcolor = None
         self.color = None
         self.width = None
-
+        
     def __eq__(self, other):
         return self.obj.__eq__(other.obj) and self.seq == other.seq
 
@@ -23,15 +23,17 @@ class Node(object):
         return self.obj.__hash__()
     
 class Edge(object):
-    def __init__(self, src, dst, meta):
+    def __init__(self, src, dst, meta = {}, color=None, label=None, style=None, width=None, weight=None):
         self.src = src
         self.dst = dst
-        self.color = None
-        self.label = None
-        self.style = None
-        self.width = None
         self.meta = meta
-
+        
+        self.color = color
+        self.label = label
+        self.style = style
+        self.width = width
+        self.weight = weight
+        
     def __eq__(self, other):
         return self.src == other.src and self.dst == other.dst
 
@@ -132,6 +134,8 @@ class Graph(object):
         self.nodes.remove(node)
         self.edges = filter(lambda edge: edge.src != node and edge.dst != node, self.edges)
         
+    def remove_edge(self, edge):
+        self.edges.remove(edge)
         
 class VisPipeLine(object):
         
