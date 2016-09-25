@@ -59,6 +59,41 @@ class AngrCGHead(Content):
             'columns': self.get_columns()
         }
 
+class AngrCommonHead(Content):
+    def __init__(self):
+        super(AngrCommonHead, self).__init__('head', ['name'])
+        
+    def gen_render(self, n):
+        node = n.obj
+        if hasattr(n.obj, 'name'):
+            name = n.obj.name
+        else:
+            name = str(n.obj)
+        
+        n.content[self.name] = {
+            'data': [{
+                'name': {
+                    'content': name
+                }
+            }], 
+            'columns': self.get_columns()
+        }
+
+class AngrCommonTypeHead(Content):
+    def __init__(self):
+        super(AngrCommonTypeHead, self).__init__('headtype', ['name'])
+        
+    def gen_render(self, n):
+        node = n.obj
+        n.content[self.name] = {
+            'data': [{
+                'name': {
+                    'content': str(type(node).__name__)
+                }
+            }], 
+            'columns': self.get_columns()
+        }
+
     
 class AngrAsm(Content):
     def __init__(self, project):
