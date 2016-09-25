@@ -32,3 +32,13 @@ class AngrVisFactory(object):
         if verbose:
             vis.add_content(AngrKbFunctionDetails())
         return vis
+
+    def default_common_graph_pipeline(self, type=False):
+        vis = Vis()
+        vis.set_source(AngrCommonSource())
+        vis.add_content(AngrCommonHead())
+        if type:
+            vis.add_content(AngrCommonTypeHead())
+        return vis
+    
+    
