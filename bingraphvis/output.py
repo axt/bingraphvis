@@ -62,7 +62,17 @@ class DotOutput(Output):
                 ret += '<FONT COLOR="'+data['color']+'">'
             if 'style' in data:
                 ret += '<'+data['style']+'>'
-            ret += escape(data['content'])
+            
+            #'content': "<TABLE><TR><TD>" +  "</TD></TR><TR><TD>".join(self.cllog[key]) + "</TD></TR></TABLE>",
+            if isinstance(data['content'], list):
+                ret += '<TABLE BORDER="0">'
+                for c in data['content']:
+                    ret += '<TR><TD ' + ('ALIGN="'+data['align']+'"' if 'align' in data else '' )+'>'
+                    ret += escape(c)
+                    ret += '</TD></TR>'
+                ret += '</TABLE>'
+            else:
+                ret += escape(data['content'])
             if 'style' in data:
                 ret += '</'+data['style']+'>'
             if 'color' in data:
@@ -108,7 +118,7 @@ class DotOutput(Output):
         if e.color:
             attrs['color'] = e.color
         if e.label:
-            attrs['label'] = e.label
+            attrs['label'] = '"'+e.label+'"'
         if e.style:
             attrs['style'] = e.style
         if e.width:
