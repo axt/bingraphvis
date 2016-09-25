@@ -10,7 +10,8 @@ class AngrRemovePathTerminator(Transformer):
     def transform(self, graph):
         remove = []
         for n in graph.nodes:
-            if n.obj.is_simprocedure and n.obj.simprocedure_name == 'PathTerminator':
+            
+            if hasattr(n.obj, 'is_simprocedure') and n.obj.is_simprocedure and n.obj.simprocedure_name == 'PathTerminator':
                 remove.append(n)
         for r in remove:
             graph.remove_node(r)
