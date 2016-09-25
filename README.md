@@ -4,6 +4,8 @@
 
 The project is in its very early stage, and its under heavy development. 
 
+Currently all the functionality I want to support is just "throwed in", but the correct abstraction layers and underlying structure is missing/incomplete.
+
 Expect breaking changes if you rely on the internals of it!
 
 A stable facade API (with limited functionality) is supported for [angr](https://github.com/angr/angr), see `visualize.py` in [angr-utils](https://github.com/axt/angr-utils).
