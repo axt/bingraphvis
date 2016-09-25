@@ -1,6 +1,8 @@
 
 from ..base import *
 import angr
+from simuvex import SimRegisterVariable, SimMemoryVariable, SimTemporaryVariable, SimConstantVariable, SimStackVariable
+
 
 def safehex(val):
     return str(hex(val) if val != None else None)
@@ -94,6 +96,56 @@ class AngrCommonTypeHead(Content):
             'columns': self.get_columns()
         }
 
+class AngrDDGLocationHead(Content):
+    def __init__(self):
+        super(AngrDDGLocationHead, self).__init__('head_location', ['name'])
+        
+    def gen_render(self, n):
+        node = n.obj
+        label = "%s %s %s %c\n" % ( hex(node.location.ins_addr), hex(node.location.simrun_addr), str(node.location.stmt_idx), '+' if node.initial else '-')
+
+        n.content[self.name] = {
+            'data': [{
+                'name': {
+                    'content': label
+                }
+            }], 
+            'columns': self.get_columns()
+        }
+
+class AngrDDGVariableHead(Content):
+    def __init__(self, project=None):
+        super(AngrDDGVariableHead, self).__init__('head_variable', ['name'])
+        self.project = project
+        
+    def gen_render(self, n):
+        node = n.obj
+        if isinstance(node.variable, SimRegisterVariable):
+            if self.project:
+                label = "REG %s %d" % (self.project.arch.register_names[node.variable.reg], node.variable.size)
+            else:
+                label = "REG %d %d" % (node.variable.reg, node.variable.size)
+        elif isinstance(node.variable, SimMemoryVariable):
+            label = "MEM " + str(node.variable)
+        elif isinstance(node.variable, SimTemporaryVariable):
+            label = "TEMP " + str(node.variable)
+        elif isinstance(node.variable, SimConstantVariable):
+            label = "CONST" + str(node.variable)
+        elif isinstance(node.variable, SimStackVariable):
+            label = "STACK" + str(node.variable)
+        else:
+            label = "UNKNOWN" + str(node.variable)
+
+        
+        n.content[self.name] = {
+            'data': [{
+                'name': {
+                    'content': label
+                }
+            }], 
+            'columns': self.get_columns()
+        }
+
     
 class AngrAsm(Content):
     def __init__(self, project):
@@ -102,10 +154,30 @@ class AngrAsm(Content):
 
     def gen_render(self, n):
         node = n.obj
-        if node.is_simprocedure or node.is_syscall:
+        
+        if type(node).__name__ == 'CodeLocation':
+            is_syscall = False
+            is_simprocedure = node.sim_procedure != None
+            addr = node.ins_addr
+            size = 1
+            max_size = None
+        elif type(node).__name__ == 'ProgramVariable':
+            is_syscall = False
+            is_simprocedure = node.location.sim_procedure != None
+            addr = node.location.simrun_addr
+            max_size = None
+            size = 1
+        else:
+            is_syscall = node.is_syscall
+            is_simprocedure = node.is_simprocedure
+            addr = node.addr
+            size = None
+            max_size = node.size
+
+        if is_simprocedure or is_syscall:
             return None
 
-        insns = self.project.factory.block(addr=node.addr, max_size=node.size).capstone.insns
+        insns = self.project.factory.block(addr=addr, max_size=max_size, num_inst=size).capstone.insns
 
         data = []
         for ins in insns:
@@ -139,35 +211,61 @@ class AngrVex(Content):
 
     def gen_render(self, n):
         node = n.obj
-        if node.is_simprocedure or node.is_syscall:
+        
+        if type(node).__name__ == 'CodeLocation':
+            is_syscall = False
+            is_simprocedure = node.sim_procedure != None
+            addr = node.simrun_addr
+            max_size = None
+            stmt_idx = node.stmt_idx
+        elif type(node).__name__ == 'ProgramVariable':
+            is_syscall = False
+            is_simprocedure = node.location.sim_procedure != None
+            addr = node.location.simrun_addr
+            max_size = None
+            stmt_idx = node.location.stmt_idx
+        else:
+            is_syscall = node.is_syscall
+            is_simprocedure = node.is_simprocedure
+            addr = node.addr
+            size = None
+            max_size = node.size
+            stmt_idx = None
+            
+            
+        if is_simprocedure or is_syscall:
             return None
 
-        vex = self.project.factory.block(addr=node.addr, max_size=node.size).vex
+        vex = self.project.factory.block(addr=addr, max_size=max_size).vex
 
         data = []
         for j, s in enumerate(vex.statements):
+            if stmt_idx == None  or stmt_idx == j:
+                data.append({
+                    'addr': {
+                        'content': "%d:" % j,
+                        'align': 'LEFT',
+                        'port': str(j)
+                    },
+                    'statement': {
+                        'content': str(s),
+                        'align': 'LEFT'
+                    },
+                    '_stmt': s,
+                    '_addr': j
+                })
+        if stmt_idx == None  or stmt_idx == len(vex.statements):
             data.append({
                 'addr': {
-                    'content': "0x%08x:" % j,
+                    'content': "NEXT: ",
                     'align': 'LEFT'
                 },
                 'statement': {
-                    'content': str(s),
+                    'content': 'PUT(%s) = %s; %s' % (vex.arch.translate_register_name(vex.offsIP), vex.next, vex.jumpkind),
                     'align': 'LEFT'
-                },
-                '_stmt': s
+                }
             })
-        data.append({
-            'addr': {
-                'content': "NEXT: ",
-                'align': 'LEFT'
-            },
-            'statement': {
-                'content': 'PUT(%s) = %s; %s' % (vex.arch.translate_register_name(vex.offsIP), vex.next, vex.jumpkind),
-                'align': 'LEFT'
-            }
-        })
-            
+                
         n.content[self.name] = {
             'data': data,
             'columns': self.get_columns(),

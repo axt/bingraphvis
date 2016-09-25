@@ -200,3 +200,77 @@ class AngrBackwardSliceAnnotatorAsm(ContentAnnotator):
                     'style':'B'
                 }
     
+
+
+class AngrColorDDGStmtEdges(EdgeAnnotator):
+    def __init__(self,project=None):
+        super(AngrColorDDGStmtEdges, self).__init__()
+        self.project = project
+
+    def annotate_edge(self, edge):
+        if 'type' in edge.meta:
+            if edge.meta['type'] == 'tmp':
+                edge.color = 'blue'
+                edge.label = 't'+ str(edge.meta['data'])
+            elif edge.meta['type'] == 'reg':
+                edge.color = 'green'
+                if self.project:
+                    edge.label = self.project.arch.register_names[edge.meta['data'].reg] + " " + str(edge.meta['data'].size)
+                else:
+                    edge.label = "reg"+str(edge.meta['data'].reg) + " " + str(edge.meta['data'].size)
+            elif edge.meta['type'] == 'mem':
+                edge.color = 'red'
+                edge.label = str(edge.meta['data'])
+            else:
+                edge.label = edge.meta['type']
+                edge.style = 'dotted'
+            
+class AngrColorDDGData(EdgeAnnotator, NodeAnnotator):
+    def __init__(self,project=None, labels=False):
+        super(AngrColorDDGData, self).__init__()
+        self.project = project
+        self.labels = labels
+
+    def annotate_edge(self, edge):
+        if 'type' in edge.meta:
+            if edge.meta['type'] == 'kill':
+                edge.color = 'red'
+            elif edge.meta['type'] == 'mem_addr':
+                edge.color = 'blue'
+                edge.style = 'dotted'
+            elif edge.meta['type'] == 'mem_data':
+                edge.color = 'blue'
+            else:
+                edge.color = 'yellow'
+            if self.labels:
+                edge.label = edge.meta['type']
+
+    def annotate_node(self, node):
+        if node.obj.initial:
+            node.fillcolor = '#ccffcc'
+            node.style = 'filled'
+
+
+
+#EXPERIMENTAL
+class AngrCodelocLogAnnotator(ContentAnnotator):
+    def __init__(self, cllog):
+        super(AngrCodelocLogAnnotator, self).__init__('vex')
+        self.cllog = cllog
+        
+    def register(self, content):
+        content.add_column_after('log')
+        
+    def annotate_content(self, node, content):
+        if node.obj.is_simprocedure or node.obj.is_syscall:
+            return
+
+        for k in range(len(content['data'])):
+            c = content['data'][k]
+            key = (node.obj.addr, k)
+            if key in self.cllog:
+                c['log'] = {
+                    'content': self.cllog[key],
+                    'align':'LEFT'
+                }
+
