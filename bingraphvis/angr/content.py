@@ -199,6 +199,9 @@ class AngrCFGDebugInfo(Content):
         self.add_line(data, "successors:")
         for k in node.successors:
             self.add_line(data, " - " + str(k))
+        if hasattr(node, 'final_states'):
+            self.add_line(data, "final_states: " + str(map(lambda k:hex(k.se.any_int(k.regs.eip)), node.final_states)))
+
         self.add_line(data, "return_target: " + safehex(node.return_target))
         self.add_line(data, "looping_times: " + str(node.looping_times))
         self.add_line(data, "size: " + str(node.size))
