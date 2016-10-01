@@ -102,7 +102,11 @@ class AngrDDGLocationHead(Content):
         
     def gen_render(self, n):
         node = n.obj
-        label = "%s %s %s %c\n" % ( hex(node.location.ins_addr), hex(node.location.simrun_addr), str(node.location.stmt_idx), '+' if node.initial else '-')
+        label = None
+        if node.location.sim_procedure:
+            label = "%s" % node.location.sim_procedure
+        else:
+            label = "%s %s %s %c\n" % ( hex(node.location.ins_addr), hex(node.location.simrun_addr), str(node.location.stmt_idx), '+' if node.initial else '-')
 
         n.content[self.name] = {
             'data': [{
