@@ -111,7 +111,7 @@ class DotOutput(Output):
         if label:
             attrs['label'] = '<{ %s }>' % label
         
-        return "%d %s" % (n.seq, self.render_attributes(default_node_attributes, attrs))
+        return "%s %s" % (str(n.seq), self.render_attributes(default_node_attributes, attrs))
 
     def render_edge(self, e):
         attrs = {}
@@ -126,7 +126,7 @@ class DotOutput(Output):
         if e.weight:
             attrs['weight'] = str(e.weight)
 
-        return "%d -> %d %s" % (e.src.seq, e.dst.seq, self.render_attributes(default_node_attributes, attrs))
+        return "%s -> %s %s" % (str(e.src.seq), str(e.dst.seq), self.render_attributes(default_node_attributes, attrs))
         
     def generate(self, graph):
         ret  = "digraph G {\n"
