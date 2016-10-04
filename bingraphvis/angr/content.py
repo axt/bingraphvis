@@ -168,7 +168,7 @@ class AngrAsm(Content):
         elif type(node).__name__ == 'ProgramVariable':
             is_syscall = False
             is_simprocedure = node.location.sim_procedure != None
-            addr = node.location.simrun_addr
+            addr = node.location.ins_addr
             max_size = None
             size = 1
         else:
