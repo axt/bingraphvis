@@ -251,6 +251,42 @@ class AngrColorDDGData(EdgeAnnotator, NodeAnnotator):
             node.style = 'filled'
 
 
+class AngrActionAnnotatorVex(ContentAnnotator):
+    def __init__(self):
+        super(AngrActionAnnotatorVex, self).__init__('vex')
+
+    def register(self, content):
+        content.add_column_after('action_type')
+        content.add_column_after('action_addr')
+        content.add_column_after('action_data')
+        
+    def annotate_content(self, node, content):
+        from simuvex.s_action import SimActionData
+
+        if node.obj.is_simprocedure or node.obj.is_syscall:
+            return
+        
+        if len(node.obj.final_states) > 0:
+            state = node.obj.final_states[0]
+            for action in state.log.actions:
+                if isinstance(action, SimActionData):
+                    c = content['data'][action.stmt_idx]
+                    c['action_type'] = {
+                        'content': action.type+"/"+action.action+"("+str(action.size.ast)+")",
+                        'align': 'LEFT'
+                    }
+                    #TODO
+                    if str(action.addr) != 'None':
+                        c['action_addr'] = {
+                            'content': str(action.addr.ast),
+                            'align': 'LEFT'
+                        }
+                    if str(action.data) != 'None':
+                        c['action_data'] = {
+                            'content': str(action.data.ast),
+                            'align': 'LEFT'
+                        }
+
 
 #EXPERIMENTAL
 class AngrCodelocLogAnnotator(ContentAnnotator):
