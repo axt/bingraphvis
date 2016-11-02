@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='bingraphvis',
-    version='0.0.1',
+    version='0.0.2',
     packages=['bingraphvis', 'bingraphvis.angr', 'bingraphvis.angr.x86'],
     install_requires=[
         'pydot',
