@@ -389,7 +389,7 @@ class AngrKbFunctionDetails(Content):
 
         #self.add_line(data, "block_addrs", str(map(safehex, fn.block_addrs)))
 
-        self.add_line(data, "call_convention", str(type(fn.call_convention)))
+        #xself.add_line(data, "call_convention", str(type(fn.call_convention)))
         self.add_line(data, "callout_sites", self.sitespp(fn.callout_sites))
         self.add_line(data, "jumpout_sites", self.sitespp(fn.jumpout_sites))
         self.add_line(data, "get_call_sites", str(map(hex,fn.get_call_sites())))
