@@ -41,17 +41,6 @@ class AngrRemoveSimProcedures(Transformer):
         for r in remove:
             graph.remove_node(r)
 
-class AngrFilterNodes(Transformer):
-    def __init__(self, node_filter):
-        self.node_filter = node_filter
-        pass
-        
-    def transform(self, graph):
-        remove = filter(lambda _: not self.node_filter(_), graph.nodes)
-
-        for r in remove:
-            graph.remove_node(r)
-
 
 class AngrRemoveImports(Transformer):
     def __init__(self, project):
@@ -99,30 +88,33 @@ class AngrRemoveFakeretEdges(Transformer):
         for r in remove:
             graph.remove_edge(r)
 
-class AngrAddEdges(Transformer):
-    def __init__(self, graph, reverse=False, color=None, label=None, style=None, width=None, weight=None):
-        self.graph = graph
-        self.reverse = reverse
-        self.color = color
-        self.label = label
-        self.style = style
-        self.width = width
-        self.weight = weight
+
+
+class AngrDDGRemoveGarbageNodes(Transformer):
+    def __init__(self, project):
+        super(AngrDDGRemoveGarbageNodes, self).__init__()
+        self.project = project        
 
     def transform(self, graph):
-        lookup = {}
-        for n in graph.nodes:
-            lookup[n.obj] = n
+
+        offsets  = set()
+        offsets.add(self.project.arch.registers['cc_op'][0])
+        offsets.add(self.project.arch.registers['cc_ndep'][0])
+        offsets.add(self.project.arch.registers['cc_dep1'][0])
+        offsets.add(self.project.arch.registers['cc_dep2'][0])
+        offsets.add(self.project.arch.registers['ip'][0])
         
-        for s,t in self.graph.edges():
-            #TODO option to add missing nodes (?)
-            try: 
-                if self.reverse:
-                    ss,tt = lookup[t],lookup[s]
-                else:
-                    ss,tt = lookup[s],lookup[t]
-                
-                graph.add_edge(Edge(ss, tt, color=self.color, label=self.label, style=self.style, width=self.width, weight=self.weight))
-            except:
-                #FIXME WARN
-                pass
+        remove = []
+        
+        for node in graph.nodes:
+            if node.obj.location.sim_procedure != None:
+                continue
+
+            vex = self.project.factory.block(addr=node.obj.location.simrun_addr).vex
+            stmt = vex.statements[node.obj.location.stmt_idx]
+            if stmt.tag == 'Ist_Put':
+                if stmt.offset in offsets:
+                    remove.append(node)
+
+        for r in remove:
+            graph.remove_node(r)
