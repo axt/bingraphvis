@@ -126,11 +126,14 @@ class AngrDDGVariableHead(Content):
         node = n.obj
         if isinstance(node.variable, SimRegisterVariable):
             if self.project:
-                label = "REG %s %d" % (self.project.arch.register_names[node.variable.reg], node.variable.size)
+                if node.variable.reg in self.project.arch.register_names:
+                    label = "REG %s %d" % (self.project.arch.register_names[node.variable.reg], node.variable.size)
+                else:
+                    label = "*REG %s %d" % (node.variable.reg, node.variable.size)
             else:
-                label = "REG %d %d" % (node.variable.reg, node.variable.size)
+                label = "*REG %d %d" % (node.variable.reg, node.variable.size)
         elif isinstance(node.variable, SimMemoryVariable):
-            label = "MEM " + str(node.variable)
+            label = "MEM " + str(node.variable) + " " + hex(node.variable.addr)
         elif isinstance(node.variable, SimTemporaryVariable):
             label = "TEMP " + str(node.variable)
         elif isinstance(node.variable, SimConstantVariable):
