@@ -1,7 +1,7 @@
 from distutils.core import setup
 
 setup(
-    name='angr-utils',
+    name='bingraphvis',
     version='0.0.1',
     packages=['bingraphvis', 'bingraphvis.angr', 'bingraphvis.angr.x86'],
     install_requires=[
