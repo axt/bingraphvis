@@ -110,7 +110,7 @@ class AngrDDGRemoveGarbageNodes(Transformer):
             if node.obj.location.sim_procedure != None:
                 continue
 
-            vex = self.project.factory.block(addr=node.obj.location.simrun_addr).vex
+            vex = self.project.factory.block(addr=node.obj.location.block_addr).vex
             stmt = vex.statements[node.obj.location.stmt_idx]
             if stmt.tag == 'Ist_Put':
                 if stmt.offset in offsets:

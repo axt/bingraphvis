@@ -106,7 +106,7 @@ class AngrDDGLocationHead(Content):
         if node.location.sim_procedure:
             label = "%s" % node.location.sim_procedure
         else:
-            label = "%s %s %s %c\n" % ( hex(node.location.ins_addr), hex(node.location.simrun_addr), str(node.location.stmt_idx), '+' if node.initial else '-')
+            label = "%s %s %s %c\n" % ( hex(node.location.ins_addr), hex(node.location.block_addr), str(node.location.stmt_idx), '+' if node.initial else '-')
 
         n.content[self.name] = {
             'data': [{
@@ -228,7 +228,7 @@ class AngrVex(Content):
         elif type(node).__name__ == 'ProgramVariable':
             is_syscall = False
             is_simprocedure = node.location.sim_procedure != None
-            addr = node.location.simrun_addr
+            addr = node.location.block_addr
             max_size = None
             stmt_idx = node.location.stmt_idx
         else:
