@@ -181,7 +181,7 @@ class AngrBackwardSliceAnnotatorAsm(ContentAnnotator):
         staddr = set()
 
         #TODO
-        vex = self.bs.project.factory.block(addr=node.obj.addr, max_size=node.obj.size).vex
+        vex = self.bs.project.factory.block(addr=node.obj.addr, size=node.obj.size).vex
         
         caddr = None
         for j, s in enumerate(vex.statements):

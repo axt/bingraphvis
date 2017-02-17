@@ -184,7 +184,7 @@ class AngrAsm(Content):
         if is_simprocedure or is_syscall:
             return None
 
-        insns = self.project.factory.block(addr=addr, max_size=max_size, num_inst=size).capstone.insns
+        insns = self.project.factory.block(addr=addr, size=max_size, num_inst=size).capstone.insns
 
         data = []
         for ins in insns:
@@ -223,27 +223,27 @@ class AngrVex(Content):
             is_syscall = False
             is_simprocedure = node.sim_procedure != None
             addr = node.simrun_addr
-            max_size = None
+            size = None
             stmt_idx = node.stmt_idx
         elif type(node).__name__ == 'ProgramVariable':
             is_syscall = False
             is_simprocedure = node.location.sim_procedure != None
             addr = node.location.block_addr
-            max_size = None
+            size = None
             stmt_idx = node.location.stmt_idx
         else:
             is_syscall = node.is_syscall
             is_simprocedure = node.is_simprocedure
             addr = node.addr
             size = None
-            max_size = node.size
+            size = node.size
             stmt_idx = None
             
             
         if is_simprocedure or is_syscall:
             return None
 
-        vex = self.project.factory.block(addr=addr, max_size=max_size).vex
+        vex = self.project.factory.block(addr=addr, size=size).vex
 
         data = []
         for j, s in enumerate(vex.statements):
