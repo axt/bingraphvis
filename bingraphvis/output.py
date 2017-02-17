@@ -12,7 +12,8 @@ escape_map = {
     "}" : "&#125;",
     "<" : "&#60;",
     ">" : "&#62;",
-    "\t": "&nbsp;"
+    "\t": "&nbsp;",
+	"&" : "&amp;"
 }
 
 def escape(text):
@@ -90,10 +91,12 @@ class DotOutput(Output):
         return ret
     
     def render_content(self, c):
-        ret = '<TABLE BORDER="0" CELLPADDING="1" ALIGN="LEFT">'
-        for r in c['data']:
-            ret += self.render_row(r, c['columns'])
-        ret += '</TABLE>'
+	ret = ''
+        if len(c['data']) > 0:
+		ret = '<TABLE BORDER="0" CELLPADDING="1" ALIGN="LEFT">'
+		for r in c['data']:
+			ret += self.render_row(r, c['columns'])
+		ret += '</TABLE>'
         return ret
         
     def render_node(self, n):
