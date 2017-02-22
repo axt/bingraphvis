@@ -77,9 +77,9 @@ class AngrArrayAccessAnnotator(ContentAnnotator):
                                 node.style = 'filled'
 
 
-class AngrCommentsAsm(ContentAnnotator):
+class AngrX86CommentsAsm(ContentAnnotator):
     def __init__(self, project):
-        super(AngrCommentsAsm, self).__init__('asm')
+        super(AngrX86CommentsAsm, self).__init__('asm')
         self.project = project
 
     def register(self, content):
@@ -106,9 +106,8 @@ class AngrCommentsAsm(ContentAnnotator):
                             }
                         else:
                             k['comment']['content'] += ", " + fname
-                            
+
                         k['comment']['color'] ='gray'
                         k['comment']['align'] = 'LEFT'
                 except: 
                     pass
-        
