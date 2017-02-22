@@ -288,10 +288,6 @@ class AngrActionAnnotatorVex(ContentAnnotator):
                         }
 
 
-
-
-
-
 #EXPERIMENTAL
 class AngrCodelocLogAnnotator(ContentAnnotator):
     def __init__(self, cllog):
@@ -331,24 +327,24 @@ class AngrCommentsAsm(ContentAnnotator):
         if len(node.obj.final_states) > 0:
             state = node.obj.final_states[0]
             for action in state.log.actions:
-                label = None
-                if action.type == 'mem':
-                    if action.data.ast.concrete:
+                label = ''
+                if action.type == 'mem' or action.type == 'reg':
+                    if isinstance(action.data.ast, int) or action.data.ast.concrete:
                         d = state.se.any_int(action.data.ast)
                         if d in self.project.kb.labels:
-                            label = self.project.kb.labels[d]
-                    if action.addr.ast.concrete:
+                            label += 'data=' + self.project.kb.labels[d] + ' '
+                    if isinstance(action.addr.ast, int) or action.addr.ast.concrete:
                         a = state.se.any_int(action.addr.ast)
                         if a in self.project.kb.labels:
-                            label = self.project.kb.labels[a]
+                            label += 'addr=' + self.project.kb.labels[a] + ' '
 
                 if action.type == 'exit':
                     if action.target.ast.concrete:
                         a = state.se.any_int(action.target.ast)
                         if a in self.project.kb.labels:
-                            label = self.project.kb.labels[a]
+                            label += self.project.kb.labels[a] + ' '
 
-                if label != None:
+                if label != '':
                     comments_by_addr[action.ins_addr] = label
 
         for k in content['data']:
