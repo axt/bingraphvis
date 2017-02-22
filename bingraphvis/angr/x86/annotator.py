@@ -51,9 +51,9 @@ class AngrColorEdgesAsm(EdgeAnnotator):
                 #TODO warning
                 edge.color = self.EDGECOLOR_UNKNOWN
 
-class AngrArrayAccessAnnotator(ContentAnnotator):
+class AngrX86ArrayAccessAnnotator(ContentAnnotator):
     def __init__(self):
-        super(AngrArrayAccessAnnotator, self).__init__('asm')
+        super(AngrX86ArrayAccessAnnotator, self).__init__('asm')
 
     def register(self, content):
         content.add_column_after('comment')
