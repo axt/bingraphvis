@@ -124,25 +124,27 @@ class AngrDDGVariableHead(Content):
         
     def gen_render(self, n):
         node = n.obj
-        if isinstance(node.variable, SimRegisterVariable):
-            if self.project:
-                if node.variable.reg in self.project.arch.register_names:
-                    label = "REG %s %d" % (self.project.arch.register_names[node.variable.reg], node.variable.size)
+        try:
+            if isinstance(node.variable, SimRegisterVariable):
+                if self.project:
+                    if node.variable.reg in self.project.arch.register_names:
+                        label = "REG %s %d" % (self.project.arch.register_names[node.variable.reg], node.variable.size)
+                    else:
+                        label = "*REG %s %d" % (node.variable.reg, node.variable.size)
                 else:
-                    label = "*REG %s %d" % (node.variable.reg, node.variable.size)
+                    label = "*REG %d %d" % (node.variable.reg, node.variable.size)
+            elif isinstance(node.variable, SimMemoryVariable):
+                label = "MEM " + str(node.variable) + " " + hex(node.variable.addr)
+            elif isinstance(node.variable, SimTemporaryVariable):
+                label = "TEMP " + str(node.variable)
+            elif isinstance(node.variable, SimConstantVariable):
+                label = "CONST" + str(node.variable)
+            elif isinstance(node.variable, SimStackVariable):
+                label = "STACK" + str(node.variable)
             else:
-                label = "*REG %d %d" % (node.variable.reg, node.variable.size)
-        elif isinstance(node.variable, SimMemoryVariable):
-            label = "MEM " + str(node.variable) + " " + hex(node.variable.addr)
-        elif isinstance(node.variable, SimTemporaryVariable):
-            label = "TEMP " + str(node.variable)
-        elif isinstance(node.variable, SimConstantVariable):
-            label = "CONST" + str(node.variable)
-        elif isinstance(node.variable, SimStackVariable):
-            label = "STACK" + str(node.variable)
-        else:
-            label = "UNKNOWN" + str(node.variable)
-
+                label = "UNKNOWN" + str(node.variable)
+        except:
+            label = "EXCEPTION"
         
         n.content[self.name] = {
             'data': [{
@@ -222,7 +224,7 @@ class AngrVex(Content):
         if type(node).__name__ == 'CodeLocation':
             is_syscall = False
             is_simprocedure = node.sim_procedure != None
-            addr = node.simrun_addr
+            addr = node.block_addr
             size = None
             stmt_idx = node.stmt_idx
         elif type(node).__name__ == 'ProgramVariable':
