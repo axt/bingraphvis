@@ -57,7 +57,7 @@ class DotOutput(Output):
         return "["+", ".join(r)+"]"
     
     def render_cell(self, key, data):
-        if data != None and data['content'] != None:
+        if data != None and data['content'] != None and data['content'].strip() != '':
             ret = '<TD '+ ('ALIGN="'+data['align']+'"' if 'align' in data else '' )+'>'
             if 'color' in data:
                 ret += '<FONT COLOR="'+data['color']+'">'

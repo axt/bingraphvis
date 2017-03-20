@@ -68,8 +68,12 @@ class AngrX86ArrayAccessAnnotator(ContentAnnotator):
                         c += 1
                         if i.type == X86_OP_MEM:
                             if i.mem.index != 0:
+                                try:
+                                    content = "R" if c == 1 else "W" + "," + ins.reg_name(i.mem.base) +"," + ins.reg_name(i.mem.index)+","+hex(i.mem.disp)+",+"+hex(i.mem.scale)
+                                except:
+                                    content = "EXCEPTION"
                                 k['comment'] = {
-                                    'content': "R" if c == 1 else "W" + "," + ins.reg_name(i.mem.base) +"," + ins.reg_name(i.mem.index)+","+hex(i.mem.disp)+",+"+hex(i.mem.scale),
+                                    'content': content,
                                     'color':'gray',
                                     'align': 'LEFT'
                                 }
