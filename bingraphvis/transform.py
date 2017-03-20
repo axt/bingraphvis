@@ -68,7 +68,4 @@ class AngrFilterNodes(Transformer):
         pass
         
     def transform(self, graph):
-        remove = filter(lambda _: not self.node_filter(_), graph.nodes)
-
-        for r in remove:
-            graph.remove_node(r)
+        graph.filter_nodes(self.node_filter)

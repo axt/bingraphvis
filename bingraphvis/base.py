@@ -137,6 +137,11 @@ class Graph(object):
     def remove_edge(self, edge):
         self.edges.remove(edge)
         
+    def filter_nodes(self, node_filter):
+        self.nodes = filter(lambda _: node_filter(_), self.nodes)
+        self.edges = filter(lambda edge: edge.src in self.nodes and edge.dst in self.nodes, self.edges)
+
+        
 class VisPipeLine(object):
         
     def __init__(self):
