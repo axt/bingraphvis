@@ -129,7 +129,7 @@ class AngrPathAnnotator(EdgeAnnotator, NodeAnnotator):
         
     def annotate_edge(self, edge):
         key = (edge.src.obj.addr, edge.dst.obj.addr)
-        if key in self.edges_hit:
+        if key in self.edges_hit and self.node_hit(edge.src.obj) and self.node_hit(edge.dst.obj):
             edge.width = 3
     
     def annotate_node(self, node):
