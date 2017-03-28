@@ -131,10 +131,12 @@ class AngrPathAnnotator(EdgeAnnotator, NodeAnnotator):
         key = (edge.src.obj.addr, edge.dst.obj.addr)
         if key in self.edges_hit and self.node_hit(edge.src.obj) and self.node_hit(edge.dst.obj):
             edge.width = 3
+            edge.color = 'red'
     
     def annotate_node(self, node):
         if self.node_hit(node.obj):
             node.width = 3
+            node.color = 'red'
 
 
 class AngrBackwardSliceAnnotatorVex(ContentAnnotator):
