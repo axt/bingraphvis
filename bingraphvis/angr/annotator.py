@@ -61,31 +61,33 @@ class AngrColorEdgesVex(EdgeAnnotator):
         if 'vex' in edge.src.content:
             vex = edge.src.content['vex']['vex']
 
-        if 'jumpkind' in edge.meta:
-            jk = edge.meta['jumpkind']
-            if jk == 'Ijk_Ret':
-                edge.color = self.EDGECOLOR_RET
-            elif jk == 'Ijk_FakeRet':
-                edge.color = self.EDGECOLOR_RET
-                edge.style = 'dashed'
-            elif jk == 'Ijk_Call':
-                edge.color = self.EDGECOLOR_CALL
-                if len (vex.next.constants) == 1 and vex.next.constants[0].value != edge.dst.obj.addr:
-                    edge.style='dotted'
-            elif jk == 'Ijk_Boring':
-                if len(vex.constant_jump_targets) > 1:
-                    if len (vex.next.constants) == 1:
-                        if edge.dst.obj.addr == vex.next.constants[0].value:
-                            edge.color=self.EDGECOLOR_CONDITIONAL_FALSE
+            if 'jumpkind' in edge.meta:
+                jk = edge.meta['jumpkind']
+                if jk == 'Ijk_Ret':
+                    edge.color = self.EDGECOLOR_RET
+                elif jk == 'Ijk_FakeRet':
+                    edge.color = self.EDGECOLOR_RET
+                    edge.style = 'dashed'
+                elif jk == 'Ijk_Call':
+                    edge.color = self.EDGECOLOR_CALL
+                    if len (vex.next.constants) == 1 and vex.next.constants[0].value != edge.dst.obj.addr:
+                        edge.style='dotted'
+                elif jk == 'Ijk_Boring':
+                    if len(vex.constant_jump_targets) > 1:
+                        if len (vex.next.constants) == 1:
+                            if edge.dst.obj.addr == vex.next.constants[0].value:
+                                edge.color=self.EDGECOLOR_CONDITIONAL_FALSE
+                            else:
+                                edge.color=self.EDGECOLOR_CONDITIONAL_TRUE
                         else:
-                            edge.color=self.EDGECOLOR_CONDITIONAL_TRUE
+                            edge.color=self.EDGECOLOR_UNKNOWN
                     else:
-                        edge.color=self.EDGECOLOR_UNKNOWN
+                        edge.color=self.EDGECOLOR_UNCONDITIONAL
                 else:
-                    edge.color=self.EDGECOLOR_UNCONDITIONAL
-            else:
-                #TODO warning
-                edge.color = self.EDGECOLOR_UNKNOWN
+                    #TODO warning
+                    edge.color = self.EDGECOLOR_UNKNOWN
+        else:
+            edge.color = self.EDGECOLOR_UNKNOWN
 
 
 class AngrPathAnnotator(EdgeAnnotator, NodeAnnotator):
