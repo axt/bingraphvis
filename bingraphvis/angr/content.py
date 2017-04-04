@@ -186,7 +186,11 @@ class AngrAsm(Content):
         if is_simprocedure or is_syscall:
             return None
 
-        insns = self.project.factory.block(addr=addr, size=max_size, num_inst=size).capstone.insns
+        try:
+            insns = self.project.factory.block(addr=addr, size=max_size, num_inst=size).capstone.insns
+        except:
+            #TODO add logging
+            insns = []
 
         data = []
         for ins in insns:
@@ -206,7 +210,7 @@ class AngrAsm(Content):
                 '_ins': ins,
                 '_addr': ins.address
             })
-            
+
         n.content[self.name] = {
             'data': data,
             'columns': self.get_columns(),

@@ -92,12 +92,12 @@ class DotOutput(Output):
         return ret
     
     def render_content(self, c):
-	ret = ''
+        ret = ''
         if len(c['data']) > 0:
-		ret = '<TABLE BORDER="0" CELLPADDING="1" ALIGN="LEFT">'
-		for r in c['data']:
-			ret += self.render_row(r, c['columns'])
-		ret += '</TABLE>'
+            ret = '<TABLE BORDER="0" CELLPADDING="1" ALIGN="LEFT">'
+            for r in c['data']:
+                ret += self.render_row(r, c['columns'])
+            ret += '</TABLE>'
         return ret
         
     def render_node(self, n):
