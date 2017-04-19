@@ -120,9 +120,9 @@ class ContentAnnotator(object):
 
 
 class Graph(object):
-    def __init__(self):
-        self.nodes = set()
-        self.edges = []
+    def __init__(self, nodes=set(), edges=[]):
+        self.nodes = nodes
+        self.edges = edges
     
     def add_node(self, node):
         self.nodes.add(node)
@@ -136,12 +136,19 @@ class Graph(object):
         
     def remove_edge(self, edge):
         self.edges.remove(edge)
-        
-    def filter_nodes(self, node_filter):
-        self.nodes = filter(lambda _: node_filter(_), self.nodes)
-        self.edges = filter(lambda edge: edge.src in self.nodes and edge.dst in self.nodes, self.edges)
 
-        
+    #TODO FIXME thats bad
+    def filter_nodes(self, node_filter):
+        new_graph = self.filtered_view(node_filter)
+        self.nodes = new_graph.nodes
+        self.edges = new_graph.edges
+
+    def filtered_view(self, node_filter):
+        nodes = filter(lambda _: node_filter(_), self.nodes)
+        edges = filter(lambda edge: node_filter(edge.src) and node_filter(edge.dst), self.edges)
+        return Graph(nodes, edges)
+    
+
 class VisPipeLine(object):
         
     def __init__(self):
@@ -191,38 +198,47 @@ class VisPipeLine(object):
 
     def set_input(self, obj):
         self.source.parse(obj, self.graph)
-        
-    def process(self):
 
+    def preprocess(self, obj, filter=None):
+        self.set_input(obj)
         for t in self.transformers:
             t.transform(self.graph)
 
+    def process(self, filter=None):
+        if filter is None:
+            graph = self.graph
+        else:
+            graph = self.graph.filtered_view(filter)
+
         for ea in self.edge_annotators:
-            ea.set_graph(self.graph)
+            ea.set_graph(graph)
             
         for na in self.node_annotators:
-            na.set_graph(self.graph)
+            na.set_graph(graph)
             
-        for n in self.graph.nodes:
+        for n in graph.nodes:
             for c in self.content.values():
                 c.render(n)
             for na in self.node_annotators:
                 na.annotate_node(n)
 
-        for e in self.graph.edges:
+        for e in graph.edges:
             for ea in self.edge_annotators:
                 ea.annotate_edge(e)
-        return self.graph
+        return graph
         
         
 class Vis(object):
     def __init__(self):
         self.pipeline = VisPipeLine()
-
-    def process(self, obj=None):
-        if obj != None:
-            self.pipeline.set_input(obj)
-        graph = self.pipeline.process()        
+    
+    def preprocess(self, obj):
+        self.pipeline.preprocess(obj)
+        
+    def process(self, obj=None, filter=None):
+        if obj:
+            self.preprocess(obj)
+        graph = self.pipeline.process(filter=filter)        
         return self.output.generate(graph)
 
     def set_source(self, source):
