@@ -1,6 +1,7 @@
 from ..base import *
 from . import *
 from .x86 import *
+from .arm import *
 
 class AngrVisFactory(object):
     def __init__(self):
@@ -23,7 +24,12 @@ class AngrVisFactory(object):
                 vis.add_edge_annotator(AngrColorEdgesVex())
         elif asminst:
             if color_edges:
-                vis.add_edge_annotator(AngrColorEdgesAsm())
+                if project.arch.name == 'ARMEL':
+                    vis.add_edge_annotator(AngrColorEdgesAsmArm())
+                elif project.arch.name in ('X86', 'AMD64'):
+                    vis.add_edge_annotator(AngrColorEdgesAsmX86())
+                else:
+                    vis.add_edge_annotator(AngrColorEdgesVex())
         return vis
 
     def default_cg_pipeline(self, kb, verbose=True):
