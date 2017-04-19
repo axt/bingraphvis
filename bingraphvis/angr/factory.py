@@ -24,7 +24,7 @@ class AngrVisFactory(object):
                 vis.add_edge_annotator(AngrColorEdgesVex())
         elif asminst:
             if color_edges:
-                if project.arch.name == 'ARMEL':
+                if project.arch.name in ('ARM', 'ARMEL', 'ARMHF'):
                     vis.add_edge_annotator(AngrColorEdgesAsmArm())
                 elif project.arch.name in ('X86', 'AMD64'):
                     vis.add_edge_annotator(AngrColorEdgesAsmX86())
