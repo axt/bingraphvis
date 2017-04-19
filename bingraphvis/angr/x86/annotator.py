@@ -5,7 +5,7 @@ from capstone.x86 import *
 
 
 
-class AngrColorEdgesAsm(EdgeAnnotator):
+class AngrColorEdgesAsmX86(EdgeAnnotator):
     EDGECOLOR_CONDITIONAL_TRUE  = 'green'
     EDGECOLOR_CONDITIONAL_FALSE = 'red'
     EDGECOLOR_UNCONDITIONAL     = 'blue'
@@ -14,8 +14,7 @@ class AngrColorEdgesAsm(EdgeAnnotator):
     EDGECOLOR_UNKNOWN           = 'yellow'
 
     def __init__(self):
-        super(AngrColorEdgesAsm, self).__init__()
-
+        super(AngrColorEdgesAsmX86, self).__init__()
 
     def annotate_edge(self, edge):
         if 'jumpkind' in edge.meta:
@@ -30,9 +29,6 @@ class AngrColorEdgesAsm(EdgeAnnotator):
             elif jk == 'Ijk_Boring':
                 if 'asm' in edge.src.content:
                     last = edge.src.content['asm']['data'][-1]
-                    #ins = edge.src.content['asm']['data'][-1]['_ins']
-                    #if ins.group(capstone.CS_GRP_JUMP):
-                    #    pass
                     if last['mnemonic']['content'].find('jmp') == 0:
                         edge.color = self.EDGECOLOR_UNCONDITIONAL
                     elif last['mnemonic']['content'].find('j') == 0:
