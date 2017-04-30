@@ -367,3 +367,38 @@ class AngrCommentsAsm(ContentAnnotator):
 
                 k['comment']['color'] = 'gray'
                 k['comment']['align'] = 'LEFT'
+
+
+
+class AngrCommentsDataRef(ContentAnnotator):
+    def __init__(self, project):
+        super(AngrCommentsDataRef, self).__init__('asm')
+        self.project = project
+
+    def register(self, content):
+        content.add_column_after('comment')
+
+    def annotate_content(self, node, content):
+        if node.obj.is_simprocedure or node.obj.is_syscall:
+            return
+
+        comments_by_addr = {}
+        for dr in node.obj.accessed_data_references:
+            if dr.sort == 'string':
+                comments_by_addr[dr.insn_addr] = dr.content
+
+        for k in content['data']:
+            ins = k['_ins']
+            if ins.address in comments_by_addr:
+                if not ('comment' in k and 'content' in k['comment']):
+                    k['comment'] = {
+                        'content': "; " + comments_by_addr[ins.address]
+                    }
+                else:
+                    k['comment']['content'] += ", " + comments_by_addr[ins.address]
+
+                k['comment']['color'] = 'gray'
+                k['comment']['align'] = 'LEFT'
+
+
+

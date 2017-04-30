@@ -17,7 +17,12 @@ class AngrVisFactory(object):
         if asminst:
             vis.add_content(AngrAsm(project))
             if comments:
-                vis.add_content_annotator(AngrCommentsAsm(project))
+                if cfg.sort == 'fast':
+                    if project.arch.name in ('X86', 'AMD64'):
+                        vis.add_content_annotator(AngrX86CommentsAsm(project))
+                    vis.add_content_annotator(AngrCommentsDataRef(project))
+                else:
+                    vis.add_content_annotator(AngrCommentsAsm(project))
         if vexinst:
             vis.add_content(AngrVex(project))
             if color_edges:
