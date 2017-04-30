@@ -2,12 +2,16 @@ from distutils.core import setup
 
 setup(
     name='bingraphvis',
-    version='0.0.2',
+    author='Attila Axt',
+    author_email='axt@load.hu',
+    license='BSD',
+    platforms=['Linux'],
+    version='0.1.0',
     packages=['bingraphvis', 'bingraphvis.angr', 'bingraphvis.angr.x86', 'bingraphvis.angr.arm'],
     install_requires=[
         'pydot',
         'networkx'
     ],
-    description='Visualisation for binary analysis related graphs',
+    long_description='Visualisation for binary analysis related graphs',
     url='https://github.com/axt/bingraphvis',
 )
