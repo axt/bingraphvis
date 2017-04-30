@@ -7,7 +7,8 @@ class AngrVisFactory(object):
     def __init__(self):
         pass
 
-    def default_cfg_pipeline(self, project, asminst=False, vexinst=False, remove_path_terminator=True, color_edges=True, comments=True):
+    def default_cfg_pipeline(self, cfg, asminst=False, vexinst=False, remove_path_terminator=True, color_edges=True, comments=True):
+        project = cfg.project
         vis = Vis()
         vis.set_source(AngrCFGSource())
         if remove_path_terminator:
