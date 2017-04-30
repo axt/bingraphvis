@@ -85,6 +85,17 @@ class AngrX86CommentsAsm(ContentAnnotator):
     def register(self, content):
         content.add_column_after('comment')
         
+    def demangle(self, names):
+        import subprocess
+        args = ['c++filt']
+        args.extend(names)
+        pipe = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        stdout, _ = pipe.communicate()
+        demangled = stdout.split("\n")
+
+        assert len(demangled) == len(names)+1
+        return demangled[:-1]
+
     def annotate_content(self, node, content):
         if node.obj.is_simprocedure or node.obj.is_syscall:
             return
@@ -98,6 +109,11 @@ class AngrX86CommentsAsm(ContentAnnotator):
                     fname = None
                     if addr in fm:
                         fname = fm[addr].name
+                        if fname.find('_Z') == 0:
+                            try:
+                                fname = self.demangle([fname])[0]
+                            except Exception, e:
+                                pass
                     
                     if fname:
                         if not ('comment' in k and 'content' in k['comment']):
