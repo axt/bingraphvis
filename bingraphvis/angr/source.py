@@ -41,7 +41,11 @@ class AngrKbCGSource(Source):
 
         for n in obj.callgraph.nodes():
             if n not in self.lookup:
-                nn = obj.functions[n]
+                if n in obj.functions:
+                    nn = obj.functions[n]
+                else:
+                    #add warning
+                    continue
                 wn = Node(self.seq, nn)
                 self.seq += 1
                 self.lookup[n] = wn
@@ -51,7 +55,8 @@ class AngrKbCGSource(Source):
 
         for src, dst, data in obj.callgraph.edges(data=True):
             if not src in self.lookup or not dst in self.lookup:
-                raise VisError("Missing nodes %s %s" % str(src), str(dst))
+                #raise VisError("Missing nodes %s %s" % str(src), str(dst))
+                continue
             wsrc = self.lookup[src]
             wdst = self.lookup[dst]
             graph.add_edge(Edge(wsrc, wdst, data))
