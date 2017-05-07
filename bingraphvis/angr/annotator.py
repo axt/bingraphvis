@@ -402,3 +402,31 @@ class AngrCommentsDataRef(ContentAnnotator):
 
 
 
+
+class AngrVariables(ContentAnnotator):
+    def __init__(self, project, debug=False):
+        super(AngrVariables, self).__init__('asm')
+        self.project = project
+        self.debug = debug
+
+    def register(self, content):
+        content.add_column_before('variables')
+
+    def annotate_content(self, node, content):
+        if node.obj.is_simprocedure or node.obj.is_syscall:
+            return
+
+        vm = self.project.kb.variables[node.obj.function_address]
+
+        for k in content['data']:
+            ins = k['_ins']
+            var = vm.find_variable_by_insn(ins.address)
+            if var != None:
+                if not 'variables' in k:
+                    k['variables'] = {}
+                k['variables']['content'] = repr(var[0].name + (' (' + var[0].ident + ')' if self.debug else '') )
+                k['variables']['color'] = 'lightblue'
+                k['variables']['align'] = 'LEFT'
+
+
+
