@@ -137,8 +137,8 @@ class DotOutput(Output):
         ret += "rankdir=TB;\n"
         
         #TODO
-        #for n in sorted(graph.nodes, key=lambda n: n.obj.addr):
-        for n in graph.nodes:
+        for n in sorted(graph.nodes, key=lambda n: n.obj.addr):
+        #for n in graph.nodes:
             ret += self.render_node(n) + "\n"
         
         for e in graph.edges:
