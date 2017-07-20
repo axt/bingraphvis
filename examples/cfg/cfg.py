@@ -16,14 +16,14 @@ def angr_cfg(sample):
     start_state = proj.factory.blank_state(addr=addr)
     start_state.stack_push(0x0)
     cfg = proj.analyses.CFGAccurate(fail_fast=True, starts=[addr], initial_state=start_state, context_sensitivity_level=1, keep_state=True, normalize=False)
-    
-    vis = AngrVisFactory().default_cfg_pipeline(cfg.project, asminst=True, vexinst=False)
-    vis.set_output(DotOutput(sample + '_angr_asm', format="png"))    
-    vis.process(cfg.graph) 
 
-    vis = AngrVisFactory().default_cfg_pipeline(cfg.project, asminst=False, vexinst=True)
-    vis.set_output(DotOutput(sample + '_angr_vex', format="png"))    
-    vis.process(cfg.graph) 
+    vis = AngrVisFactory().default_cfg_pipeline(cfg, asminst=True, vexinst=False)
+    vis.set_output(DotOutput(sample + '_angr_asm', format="png"))
+    vis.process(cfg.graph)
+
+    vis = AngrVisFactory().default_cfg_pipeline(cfg, asminst=False, vexinst=True)
+    vis.set_output(DotOutput(sample + '_angr_vex', format="png"))
+    vis.process(cfg.graph)
 
 from pyopenreil.REIL import *
 from pyopenreil.utils import bin_BFD
@@ -34,18 +34,18 @@ def openreil_cfg(sample):
     for k,v in reader.bfd.symbols.iteritems():
         if v.name == 'main':
             addr = k
-    
+
     tr = CodeStorageTranslator(reader)
     cfg = CFGraphBuilder(tr).traverse(addr)
-    
+
     vis = OpenreilVisFactory().default_cfg_pipeline(asminst=True, reilinst=False)
-    vis.set_output(DotOutput(sample + '_openreil_asm', format="png"))    
-    vis.process(cfg) 
+    vis.set_output(DotOutput(sample + '_openreil_asm', format="png"))
+    vis.process(cfg)
 
     vis = OpenreilVisFactory().default_cfg_pipeline(asminst=False, reilinst=True)
-    vis.set_output(DotOutput(sample + '_openreil_reil', format="png"))    
-    vis.process(cfg) 
-    
+    vis.set_output(DotOutput(sample + '_openreil_reil', format="png"))
+    vis.process(cfg)
+
     #cfg.to_dot_file('openreil_' + sample + ".raw")
 
 if __name__ == "__main__":
