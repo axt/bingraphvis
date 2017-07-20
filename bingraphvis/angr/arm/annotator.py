@@ -25,11 +25,13 @@ class AngrColorEdgesAsmArm(EdgeAnnotator):
             elif jk == 'Ijk_Boring':
                 if 'asm' in edge.src.content:
                     last = edge.src.content['asm']['data'][-1]
-                    if last['mnemonic']['content'] in ['b', 'bx']:
+                    # Get rid of width specifiers (.w or .n)
+                    asm = last['mnemonic']['content'].split('.')[0]
+                    if asm in ['b', 'bx']:
                         edge.color = self.EDGECOLOR_UNCONDITIONAL
-                    elif last['mnemonic']['content'].find('b') == 0:
+                    elif asm.startswith('b') or asm in ('cbz', 'cbnz'):
                         try:
-                            if int(last['operands']['content'].replace('#',''),16) == edge.dst.obj.addr:
+                            if int(last['operands']['content'].split(', ')[-1].replace('#',''),16) == edge.dst.obj.addr:
                                 edge.color = self.EDGECOLOR_CONDITIONAL_TRUE
                             else:
                                 edge.color = self.EDGECOLOR_CONDITIONAL_FALSE
