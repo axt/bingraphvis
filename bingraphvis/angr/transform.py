@@ -55,10 +55,10 @@ class AngrRemoveImports(Transformer):
         return set(eaddrs)
 
     def transform(self, graph):
-        remove = []
+        remove = set()
         for n in graph.nodes:
             if n.obj.addr in self.eaddrs:
-                remove.append(n)
+                remove.add(n)
                 cs = []
                 for e in graph.edges:
                     if e.dst == n:
@@ -70,7 +70,7 @@ class AngrRemoveImports(Transformer):
                             found = True
                             break
                     if not found:
-                        remove.append(c)
+                        remove.add(c)
         for r in remove:
             graph.remove_node(r)
 
