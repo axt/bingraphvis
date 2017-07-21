@@ -28,21 +28,25 @@ class AngrColorEdgesAsmX86(EdgeAnnotator):
                 edge.color = self.EDGECOLOR_CALL
             elif jk == 'Ijk_Boring':
                 if 'asm' in edge.src.content:
-                    last = edge.src.content['asm']['data'][-1]
-                    if last['mnemonic']['content'].find('jmp') == 0:
-                        edge.color = self.EDGECOLOR_UNCONDITIONAL
-                    elif last['mnemonic']['content'].find('j') == 0:
-                        try:
-                            if int(last['operands']['content'],16) == edge.dst.obj.addr:
-                                edge.color = self.EDGECOLOR_CONDITIONAL_TRUE
-                            else:
-                                edge.color = self.EDGECOLOR_CONDITIONAL_FALSE
-                        except Exception, e:
-                            #TODO warning
-                            edge.color = self.EDGECOLOR_UNKNOWN
+                    asm = edge.src.content['asm']
+                    if 'data' in asm and len(asm['data']) > 0:
+                        last = edge.src.content['asm']['data'][-1]
+                        if last['mnemonic']['content'].find('jmp') == 0:
+                            edge.color = self.EDGECOLOR_UNCONDITIONAL
+                        elif last['mnemonic']['content'].find('j') == 0:
+                            try:
+                                if int(last['operands']['content'],16) == edge.dst.obj.addr:
+                                    edge.color = self.EDGECOLOR_CONDITIONAL_TRUE
+                                else:
+                                    edge.color = self.EDGECOLOR_CONDITIONAL_FALSE
+                            except Exception, e:
+                                #TODO warning
+                                edge.color = self.EDGECOLOR_UNKNOWN
+                        else:
+                            edge.color = self.EDGECOLOR_UNCONDITIONAL
+                            edge.style = 'dashed'
                     else:
-                        edge.color = self.EDGECOLOR_UNCONDITIONAL
-                        edge.style = 'dashed'
+                        edge.color = self.EDGECOLOR_UNKNOWN        
             else:
                 #TODO warning
                 edge.color = self.EDGECOLOR_UNKNOWN
