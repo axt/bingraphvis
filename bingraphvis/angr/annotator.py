@@ -58,7 +58,6 @@ class AngrColorEdgesVex(EdgeAnnotator):
 
     def annotate_edge(self, edge):
         vex = None
-
         if 'jumpkind' in edge.meta:
             jk = edge.meta['jumpkind']
             if jk == 'Ijk_Ret':
@@ -420,13 +419,14 @@ class AngrVariables(ContentAnnotator):
 
         for k in content['data']:
             ins = k['_ins']
-            var = vm.find_variable_by_insn(ins.address)
-            if var != None:
-                if not 'variables' in k:
-                    k['variables'] = {}
-                k['variables']['content'] = repr(var[0].name + (' (' + var[0].ident + ')' if self.debug else '') )
-                k['variables']['color'] = 'lightblue'
-                k['variables']['align'] = 'LEFT'
+            vars = vm.find_variables_by_insn(ins.address, 'memory')
+            if vars: 
+                for var in vars:
+                    if not 'variables' in k:
+                        k['variables'] = {'content':''}
+                    k['variables']['content'] += repr(var[0].name + (' (' + var[0].ident + ')' if self.debug else '') )
+                    k['variables']['color'] = 'lightblue'
+                    k['variables']['align'] = 'LEFT'
 
 
 

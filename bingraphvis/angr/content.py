@@ -188,7 +188,8 @@ class AngrAsm(Content):
 
         try:
             insns = self.project.factory.block(addr=addr, size=max_size, num_inst=size).capstone.insns
-        except:
+        except Exception, e:
+            print e
             #TODO add logging
             insns = []
 
