@@ -63,6 +63,10 @@ class AngrFGraphHead(Content):
             node_color = "gray"
             node_name = node.name
 
+        #AIL block
+        #FIXME
+        elif type(node).__name__ == 'Block':
+            node_type = "AILBlock"
 
         else:
             node_type = "Unhandled (%s)" % node.__class__
@@ -242,8 +246,14 @@ class AngrAsm(Content):
             return
         elif type(node).__name__ == 'Function':
             return
+        # AIL
+        elif type(node).__name__ == 'Block':
+            addr = node.addr
+            max_size = None
+            size = None
+            is_syscall = False
+            is_simprocedure = False
         else:
-            #TODO: raise exception or log it at least?
             return
 
         if is_simprocedure or is_syscall:
@@ -280,6 +290,39 @@ class AngrAsm(Content):
             'columns': self.get_columns(),
         }
 
+class AngrAIL(Content):
+    def __init__(self, project):
+        super(AngrAIL, self).__init__('ail', ['addr', 'stmt'])
+        self.project = project        
+
+    def gen_render(self, n):
+        node = n.obj
+        
+        #CFG
+        if not type(node).__name__ == 'Block':
+            return
+
+        data = []
+        for i, stmt in enumerate(node.statements):
+            data.append({
+                'addr': {
+                    'content': "%02d | %x " % (i, stmt.ins_addr),
+                    'align': 'LEFT'
+                },
+                'stmt': {
+                    'content': str(stmt),
+                    'align': 'LEFT'
+                },
+                '_stmt': stmt,
+                '_addr': stmt.ins_addr
+            })
+
+        n.content[self.name] = {
+            'data': data,
+            'columns': self.get_columns(),
+        }
+
+
 
 class AngrVex(Content):
     def __init__(self, project):
@@ -289,7 +332,15 @@ class AngrVex(Content):
     def gen_render(self, n):
         node = n.obj
         
-        if type(node).__name__ == 'CodeLocation':
+        #CFG
+        if type(node).__name__ == 'CFGNode':
+            is_syscall = node.is_syscall
+            is_simprocedure = node.is_simprocedure
+            addr = node.addr
+            size = None
+            size = node.size
+            stmt_idx = None
+        elif type(node).__name__ == 'CodeLocation':
             is_syscall = False
             is_simprocedure = node.sim_procedure != None
             addr = node.block_addr
@@ -301,13 +352,28 @@ class AngrVex(Content):
             addr = node.location.block_addr
             size = None
             stmt_idx = node.location.stmt_idx
-        else:
-            is_syscall = node.is_syscall
-            is_simprocedure = node.is_simprocedure
+        # FGgraph
+        elif type(node).__name__ == 'BlockNode':
+            is_syscall = False
+            is_simprocedure = False
             addr = node.addr
+            max_size = node.size
             size = None
-            size = node.size
             stmt_idx = None
+        elif type(node).__name__ == 'HookNode':
+            return
+        elif type(node).__name__ == 'Function':
+            return
+        # AIL
+        elif type(node).__name__ == 'Block':
+            addr = node.addr
+            max_size = None
+            size = None
+            is_syscall = False
+            is_simprocedure = False
+            stmt_idx = None
+        else:
+            return
             
             
         if is_simprocedure or is_syscall:
