@@ -38,6 +38,15 @@ class AngrVisFactory(object):
                     vis.add_edge_annotator(AngrColorEdgesVex())
         return vis
 
+    def default_fgraph_pipeline(self, project, graph, asminst=True):
+        vis = Vis()
+        vis.set_source(AngrCommonSource())
+        vis.add_content(AngrFGraphHead())
+        if asminst:
+            vis.add_content(AngrAsm(project))
+        return vis
+        
+
     def default_cg_pipeline(self, kb, verbose=True):
         vis = Vis()
         vis.set_source(AngrKbCGSource())

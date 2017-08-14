@@ -42,6 +42,53 @@ class AngrCFGHead(Content):
             'columns': self.get_columns()
         }
 
+class AngrFGraphHead(Content):
+    def __init__(self):
+        super(AngrFGraphHead, self).__init__('head', ['type', 'name', 'addr'])
+        
+    def gen_render(self, n):
+        node = n.obj
+        node_type = None
+        node_color = None
+        node_name = None
+        
+        # FGraph
+        if isinstance(node, angr.knowledge.codenode.BlockNode):
+            node_type = "Block"
+        elif isinstance(node, angr.knowledge.codenode.HookNode):
+            node_type = "Hook"
+            node_color = "lightblue"
+        elif isinstance(node, angr.knowledge.function.Function):
+            node_type = "Function"
+            node_color = "gray"
+            node_name = node.name
+
+
+        else:
+            node_type = "Unhandled (%s)" % node.__class__
+            node_color = "yellow"
+        
+        if node_color:
+            n.style = 'filled'
+            n.fillcolor = node_color
+            
+        n.content[self.name] = {
+            'data': [{
+                'type': {
+                    'content': node_type
+                },
+                'name': {
+                    'content': node_name
+                },
+                'addr': {
+                    'content': "{:#08x}".format(node.addr),
+                    'style':'B'
+                },
+            }], 
+            'columns': self.get_columns()
+        }
+
+
 class AngrCGHead(Content):
     def __init__(self):
         super(AngrCGHead, self).__init__('head', ['name','addr'])
@@ -164,7 +211,15 @@ class AngrAsm(Content):
     def gen_render(self, n):
         node = n.obj
         
-        if type(node).__name__ == 'CodeLocation':
+        #CFG
+        if type(node).__name__ == 'CFGNode':
+            is_syscall = node.is_syscall
+            is_simprocedure = node.is_simprocedure
+            addr = node.addr
+            size = None
+            max_size = node.size
+        # DDG
+        elif type(node).__name__ == 'CodeLocation':
             is_syscall = False
             is_simprocedure = node.sim_procedure != None
             addr = node.ins_addr
@@ -176,12 +231,20 @@ class AngrAsm(Content):
             addr = node.location.ins_addr
             max_size = None
             size = 1
-        else:
-            is_syscall = node.is_syscall
-            is_simprocedure = node.is_simprocedure
+        # FGgraph
+        elif type(node).__name__ == 'BlockNode':
+            is_syscall = False
+            is_simprocedure = False
             addr = node.addr
-            size = None
             max_size = node.size
+            size = None
+        elif type(node).__name__ == 'HookNode':
+            return
+        elif type(node).__name__ == 'Function':
+            return
+        else:
+            #TODO: raise exception or log it at least?
+            return
 
         if is_simprocedure or is_syscall:
             return None
