@@ -136,11 +136,12 @@ class ContentAnnotator(object):
 
 
 class Cluster(object):
-    def __init__(self, key, parent=None, nodes=None, visible=True):
+    def __init__(self, key, parent=None, nodes=None, label=None, visible=True):
         self.key = key
         self.parent = parent
         self.nodes = nodes if nodes else set()
         self.visible = visible
+        self.label = label
         
     def add_node(self, node):
         self.nodes.add(node)
@@ -159,8 +160,8 @@ class Graph(object):
         self.seqmap = {}
         self.clusters = {}
 
-    def create_cluster(self, key, parent=None, nodes=None, visible=True):
-        cluster = Cluster(key, parent, nodes, visible)
+    def create_cluster(self, key, parent=None, nodes=None, label=None, visible=True):
+        cluster = Cluster(key, parent, nodes, label, visible)
         self.clusters[key] = cluster
         self.seqmap[key] = self.seqctr.next()
         return cluster

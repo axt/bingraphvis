@@ -132,10 +132,28 @@ class DotOutput(Output):
 
         return "%s -> %s %s" % (str(e.src.seq), str(e.dst.seq), self.render_attributes(default_node_attributes, attrs))
         
+        
+    def generate_cluster_label(self, label):
+        rendered = ""
+        
+        if label is None:
+            pass
+        elif isinstance(label, list):
+            rendered = ""
+            for l in label:
+                if rendered != "":
+                    rendered += "<BR/>"
+                rendered += escape(l) 
+        else:
+            rendered += escape(label)
+        
+        return 'label=< %s >;' % rendered
+        
     def generate_cluster(self, graph, cluster):
         ret = ""
         if cluster:
             ret += "subgraph " + ("cluster" if cluster.visible else "X") + "_" + str(graph.seqmap[cluster.key]) + "{\n"
+            ret += self.generate_cluster_label(cluster.label)
         
         nodes = filter(lambda n:n.cluster == cluster, graph.nodes)
         
@@ -145,10 +163,10 @@ class DotOutput(Output):
         for n in nodes:
             ret += self.render_node(n) + "\n"
 
-        for child_cluster in graph.get_clusters(cluster):
-            ret += self.generate_cluster(graph, child_cluster)
+        if cluster:
+            for child_cluster in graph.get_clusters(cluster):
+                ret += self.generate_cluster(graph, child_cluster)
 
-            
         if cluster:
             ret += "}\n"
         return ret
