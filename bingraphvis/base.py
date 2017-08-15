@@ -1,20 +1,28 @@
 
 
 from collections import OrderedDict
+import itertools
 
 class VisError(Exception):
     pass
 
 
 class Node(object):
-    def __init__(self, seq, obj):
+    def __init__(self, seq, obj, cluster=None):
         self.obj = obj
         self.seq = seq
+        self.cluster = cluster
         self.content = OrderedDict()
         self.style = None
         self.fillcolor = None
         self.color = None
         self.width = None
+
+    def set_cluster(cluster):
+        if self.cluster != None:
+            self.cluster.remove_node(self)
+        cluster.add_node(self)
+        node.cluster = cluster
         
     def __eq__(self, other):
         return self.obj.__eq__(other.obj) and self.seq == other.seq
@@ -80,6 +88,14 @@ class Transformer(object):
         raise NotImplementedError('transform() is not implemented.')
 
 
+class Clusterer(object):
+    def __init__(self):
+        pass
+        
+    def cluster(self, graph):
+        raise NotImplementedError('cluster() is not implemented.')
+
+
 class Content(object):
     def __init__(self, name, columns):
         self.name = name
@@ -119,13 +135,49 @@ class ContentAnnotator(object):
         raise NotImplementedError('annotate_content() is not implemented.')
 
 
+class Cluster(object):
+    def __init__(self, key, parent=None, nodes=None, visible=True):
+        self.key = key
+        self.parent = parent
+        self.nodes = nodes if nodes else set()
+        self.visible = visible
+        
+    def add_node(self, node):
+        self.nodes.add(node)
+        node.cluster = self
+
+    def remove_node(self, node):
+        self.nodes.remove(node)
+        node.cluster = None
+
+
 class Graph(object):
     def __init__(self, nodes=None, edges=None):
         self.nodes = nodes if nodes else set()
         self.edges = edges if edges else []
+        self.seqctr = itertools.count()
+        self.seqmap = {}
+        self.clusters = {}
 
+    def create_cluster(self, key, parent=None, nodes=None, visible=True):
+        cluster = Cluster(key, parent, nodes, visible)
+        self.clusters[key] = cluster
+        self.seqmap[key] = self.seqctr.next()
+        return cluster
+
+    def get_cluster(self, key):
+        if key in self.clusters:
+            return self.clusters[key]
+        else:
+            return None
+    
+    def get_clusters(self, parent=None):
+        return filter(lambda c:c.parent==parent, self.clusters.values())
+        
     def add_node(self, node):
         self.nodes.add(node)
+        if node.cluster:
+            node.cluster.add_node(node)
         
     def add_edge(self, edge):
         self.edges.append(edge)
@@ -156,6 +208,7 @@ class VisPipeLine(object):
         self.node_annotators = []
         self.edge_annotators = []
         self.transformers = []
+        self.clusterers = []
         self.graph = Graph()
         
     def set_source(self, source):
@@ -179,6 +232,13 @@ class VisPipeLine(object):
             raise VisError("Incompatible edge annotator type '%s'" % type(obj))
         self.edge_annotators.append(obj)
         return self
+
+    def add_clusterer(self, obj):
+        if not isinstance(obj, Clusterer):
+            raise VisError("Incompatible clusterer type '%s'" % type(obj))
+        self.clusterers.append(obj)
+        return self
+
     
     def add_content_annotator(self, obj):
         if not isinstance(obj, ContentAnnotator):
@@ -225,6 +285,9 @@ class VisPipeLine(object):
         for e in graph.edges:
             for ea in self.edge_annotators:
                 ea.annotate_edge(e)
+        for c in self.clusterers:
+            c.cluster(graph)
+        
         return graph
         
         
@@ -259,6 +322,10 @@ class Vis(object):
 
     def add_content_annotator(self, obj):
         self.pipeline.add_content_annotator(obj)
+        return self
+
+    def add_clusterer(self, obj):
+        self.pipeline.add_clusterer(obj)
         return self
         
     def add_transformer(self, obj):

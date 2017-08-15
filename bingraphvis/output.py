@@ -132,15 +132,36 @@ class DotOutput(Output):
 
         return "%s -> %s %s" % (str(e.src.seq), str(e.dst.seq), self.render_attributes(default_node_attributes, attrs))
         
+    def generate_cluster(self, graph, cluster):
+        ret = ""
+        if cluster:
+            ret += "subgraph " + ("cluster" if cluster.visible else "X") + "_" + str(graph.seqmap[cluster.key]) + "{\n"
+        
+        nodes = filter(lambda n:n.cluster == cluster, graph.nodes)
+        
+        if len(nodes) > 0 and hasattr(nodes[0].obj, 'addr'):
+            nodes = sorted(nodes, key=lambda n: n.obj.addr)
+        
+        for n in nodes:
+            ret += self.render_node(n) + "\n"
+
+        for child_cluster in graph.get_clusters(cluster):
+            ret += self.generate_cluster(graph, child_cluster)
+
+            
+        if cluster:
+            ret += "}\n"
+        return ret
+        
     def generate(self, graph):
         ret  = "digraph G {\n"
         ret += "rankdir=TB;\n"
         
-        #TODO
-        for n in sorted(graph.nodes, key=lambda n: n.obj.addr):
-        #for n in graph.nodes:
-            ret += self.render_node(n) + "\n"
-        
+        for cluster in graph.get_clusters():
+            ret += self.generate_cluster(graph, cluster)
+            
+        ret += self.generate_cluster(graph, None)
+                
         for e in graph.edges:
             ret += self.render_edge(e) + "\n"
             
