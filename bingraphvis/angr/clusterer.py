@@ -1,10 +1,13 @@
 
 from ..base import *
 import networkx as nx 
+import angr
+import itertools
 
-class AngrExperimentalClusterer(Clusterer):
+
+class AngrCallstackKeyClusterer(Clusterer):
     def __init__(self, visible=True):
-        super(AngrExperimentalClusterer, self).__init__()
+        super(AngrCallstackKeyClusterer, self).__init__()
         self.visible = visible
 
     def cluster(self, graph):
