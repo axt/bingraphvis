@@ -20,11 +20,8 @@ try:
 	'algae'  : Algae_8.hex_colors,
 	'solar'  : Solar_9_r.hex_colors
     })
-except Exception,e:
-    print e
+except:
     pass
-
-print PALETTES
 
 def get_palette(name):
     return PALETTES[name]
