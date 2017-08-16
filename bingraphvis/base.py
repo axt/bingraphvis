@@ -142,6 +142,8 @@ class Cluster(object):
         self.nodes = nodes if nodes else set()
         self.visible = visible
         self.label = label
+        self.style = None;
+        self.fillcolor = None;
         
     def add_node(self, node):
         self.nodes.add(node)

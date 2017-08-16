@@ -153,8 +153,12 @@ class DotOutput(Output):
         ret = ""
         if cluster:
             ret += "subgraph " + ("cluster" if cluster.visible else "X") + "_" + str(graph.seqmap[cluster.key]) + "{\n"
-            ret += self.generate_cluster_label(cluster.label)
-        
+            ret += self.generate_cluster_label(cluster.label)+"\n"
+            if cluster.style:
+                ret +='style="%s";\n' % cluster.style
+            if cluster.fillcolor:
+                ret +='color="%s";\n' % cluster.fillcolor
+                
         nodes = filter(lambda n:n.cluster == cluster, graph.nodes)
         
         if len(nodes) > 0 and hasattr(nodes[0].obj, 'addr'):
