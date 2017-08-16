@@ -4,7 +4,6 @@ import networkx as nx
 import angr
 import itertools
 
-
 class AngrCallstackKeyClusterer(Clusterer):
     def __init__(self, visible=True):
         super(AngrCallstackKeyClusterer, self).__init__()
@@ -42,7 +41,7 @@ class AngrCallstackKeyClusterer(Clusterer):
             if e.src.cluster and e.dst.cluster and e.src.cluster != e.dst.cluster:
                 if  e.meta['jumpkind'] == 'Ijk_Call':
                     cgraph.add_edge(e.src.cluster.key, e.dst.cluster.key)
-                
+        
         for n in cgraph.nodes():
             in_edges = cgraph.in_edges(n)
             if len(in_edges) == 1:
@@ -50,7 +49,6 @@ class AngrCallstackKeyClusterer(Clusterer):
                 scluster = graph.get_cluster(s)
                 tcluster = graph.get_cluster(t)
                 tcluster.parent = scluster
-                
 
 
 class AngrStructuredClusterer(Clusterer):
@@ -112,5 +110,3 @@ class AngrStructuredClusterer(Clusterer):
         for n in to_remove:
             graph.remove_node(n)
                 
-        
-    
