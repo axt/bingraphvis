@@ -178,6 +178,7 @@ class DotOutput(Output):
     def generate(self, graph):
         ret  = "digraph G {\n"
         ret += "rankdir=TB;\n"
+        ret += "newrank=true;\n"
         
         for cluster in graph.get_clusters():
             ret += self.generate_cluster(graph, cluster)
