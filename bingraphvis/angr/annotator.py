@@ -359,10 +359,10 @@ class AngrCommentsAsm(ContentAnnotator):
             if ins.address in comments_by_addr:
                 if not ('comment' in k and 'content' in k['comment']):
                     k['comment'] = {
-                        'content': "; " + comments_by_addr[ins.address]
+                        'content': "; " + comments_by_addr[ins.address][:100]
                     }
                 else:
-                    k['comment']['content'] += ", " + comments_by_addr[ins.address]
+                    k['comment']['content'] += ", " + comments_by_addr[ins.address][:100]
 
                 k['comment']['color'] = 'gray'
                 k['comment']['align'] = 'LEFT'
@@ -391,10 +391,10 @@ class AngrCommentsDataRef(ContentAnnotator):
             if ins.address in comments_by_addr:
                 if not ('comment' in k and 'content' in k['comment']):
                     k['comment'] = {
-                        'content': "; " + comments_by_addr[ins.address]
+                        'content': "; " + comments_by_addr[ins.address][:100]
                     }
                 else:
-                    k['comment']['content'] += ", " + comments_by_addr[ins.address]
+                    k['comment']['content'] += ", " + comments_by_addr[ins.address][:100]
 
                 k['comment']['color'] = 'gray'
                 k['comment']['align'] = 'LEFT'
