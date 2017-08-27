@@ -130,7 +130,7 @@ class DotOutput(Output):
         if e.weight:
             attrs['weight'] = str(e.weight)
 
-        return "%s -> %s %s" % (str(e.src.seq), str(e.dst.seq), self.render_attributes(default_node_attributes, attrs))
+        return "%s -> %s %s" % (str(e.src.seq), str(e.dst.seq), self.render_attributes(default_edge_attributes, attrs))
         
         
     def generate_cluster_label(self, label):
