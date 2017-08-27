@@ -89,9 +89,11 @@ class AngrStructuredClusterer(Clusterer):
         elif isinstance(obj, angr.analyses.structurer.ConditionalBreakNode):
             cluster = graph.create_cluster(str(self.seq.next()), parent=parent_cluster, label=["CONDITIONAL BREAK NODE", "Condition:  %s" % obj.condition])
             self.build(obj.target, graph, cluster)
-                
         elif type(obj).__name__ == 'Block':
             self.block_to_cluster[obj] = parent_cluster
+        elif isinstance(obj, nx.DiGraph):
+            for n in obj.nodes():
+                self.build(n, graph, parent_cluster)
         else:
             print type(obj)
             import ipdb; ipdb.set_trace()
@@ -103,10 +105,11 @@ class AngrStructuredClusterer(Clusterer):
         for n in graph.nodes:
             if n.obj in self.block_to_cluster:
                 cluster = self.block_to_cluster[n.obj]
-                cluster.add_node(n)
+                if cluster:
+                    cluster.add_node(n)
             else:
                 to_remove.append(n)
         
-        for n in to_remove:
-            graph.remove_node(n)
+        #for n in to_remove:
+        #    graph.remove_node(n)
                 
