@@ -45,20 +45,20 @@ class AngrCFGHead(Content):
 class AngrFGraphHead(Content):
     def __init__(self):
         super(AngrFGraphHead, self).__init__('head', ['type', 'name', 'addr'])
-        
+
     def gen_render(self, n):
         node = n.obj
         node_type = None
         node_color = None
         node_name = None
-        
+
         # FGraph
-        if isinstance(node, angr.knowledge.codenode.BlockNode):
+        if type(node).__name__ == 'BlockNode':
             node_type = "Block"
-        elif isinstance(node, angr.knowledge.codenode.HookNode):
+        elif type(node).__name__ == 'HookNode':
             node_type = "Hook"
             node_color = "lightblue"
-        elif isinstance(node, angr.knowledge.function.Function):
+        elif type(node).__name__ == 'Function':
             node_type = "Function"
             node_color = "gray"
             node_name = node.name
@@ -475,17 +475,17 @@ class AngrKbFunctionDetails(Content):
     def sitespp(self, arg):
         ret = []
         for k in arg:
-            if isinstance(k, angr.knowledge.BlockNode):
+            if type(k).__name__ == 'BlockNode':
                 ret.append(hex(k.addr))
-            elif isinstance(k, angr.knowledge.HookNode):
+            elif type(k).__name__ == 'HookNode':
                 ret.append(hex(k.addr))
             else:
                 ret.append("UNKNOWN")
         return "[" + ",".join(ret) + "]"
-        
+
     def gen_render(self, n):
         fn = n.obj
-        
+
         data = []
         self.add_line(data, "addr", safehex(fn.addr))
 
