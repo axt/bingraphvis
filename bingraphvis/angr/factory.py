@@ -38,7 +38,7 @@ class AngrVisFactory(object):
                     vis.add_edge_annotator(AngrColorEdgesVex())
         return vis
 
-    def default_func_graph_pipeline(self, project, graph, ailinst=True, asminst=True, vexinst=False):
+    def default_func_graph_pipeline(self, project, ailinst=True, asminst=True, vexinst=False):
         vis = Vis()
         vis.set_source(AngrCommonSource())
         vis.add_content(AngrFGraphHead())
