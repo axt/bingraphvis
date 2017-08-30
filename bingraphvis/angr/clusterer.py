@@ -91,6 +91,10 @@ class AngrStructuredClusterer(Clusterer):
             self.build(obj.target, graph, cluster)
         elif type(obj).__name__ == 'Block':
             self.block_to_cluster[obj] = parent_cluster
+        elif type(obj).__name__ == 'BlockNode':
+            self.block_to_cluster[obj] = parent_cluster
+        elif type(obj).__name__ == 'HookNode':
+            self.block_to_cluster[obj] = parent_cluster
         elif isinstance(obj, nx.DiGraph):
             for n in obj.nodes():
                 self.build(n, graph, parent_cluster)
