@@ -22,6 +22,7 @@ def escape(text):
 
 default_node_attributes = {
     'shape'    : 'Mrecord',
+#    'shape': 'none',
     'fontname' : 'monospace',
     'fontsize' : '8.0',
 }
@@ -110,10 +111,20 @@ class DotOutput(Output):
             attrs['color'] = n.color
         if n.width:
             attrs['penwidth'] = str(n.width)
-
+        if n.url:
+            attrs['URL'] = '"'+n.url+'"'
+        if n.tooltip:
+            attrs['tooltip'] = '"'+n.tooltip+'"'
+            
+            
         label = "|".join([self.render_content(c) for c in n.content.values()])
         if label:
             attrs['label'] = '<{ %s }>' % label
+        
+        #label = '<TABLE ROWS="*" BORDER="1" STYLE="ROUNDED" CELLSPACING="4" CELLPADDING="0" CELLBORDER="0"><TR><TD FIXEDSIZE="FALSE" ALIGN="LEFT">' + '</TD></TR><TR><TD FIXEDSIZE="FALSE"  ALIGN="LEFT">'.join([self.render_content(c) for c in n.content.values()]) + "</TD></TR></TABLE>"
+        #if label:
+        #    attrs['label'] = '<%s>' % label
+        
         
         return "%s %s" % (str(n.seq), self.render_attributes(default_node_attributes, attrs))
 
@@ -176,7 +187,7 @@ class DotOutput(Output):
         return ret
         
     def generate(self, graph):
-        ret  = "digraph G {\n"
+        ret  = "digraph \"\" {\n"
         ret += "rankdir=TB;\n"
         ret += "newrank=true;\n"
         

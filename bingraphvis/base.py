@@ -17,6 +17,8 @@ class Node(object):
         self.fillcolor = None
         self.color = None
         self.width = None
+        self.url = None
+        self.tooltip = None
 
     def set_cluster(cluster):
         if self.cluster != None:
