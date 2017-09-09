@@ -59,34 +59,34 @@ class AngrStructuredClusterer(Clusterer):
         self.seq = itertools.count()
         
     def build(self, obj, graph, parent_cluster):
-        if isinstance(obj, angr.analyses.region_identifier.GraphRegion):
+        if type(obj).__name__ == 'GraphRegion':
             cluster = graph.create_cluster(str(self.seq.next()), parent=parent_cluster, label=repr(obj))
             for n in obj.graph.nodes():
                 self.build(n, graph, cluster)
-        elif isinstance(obj, angr.analyses.region_identifier.MultiNode):
+        elif type(obj).__name__ == 'MultiNode':
             cluster = graph.create_cluster(str(self.seq.next()), parent=parent_cluster, label=repr(obj))
             for n in obj.nodes:
                 self.build(n, graph, cluster)
-        elif isinstance(obj, angr.analyses.structurer.SequenceNode):
+        elif type(obj).__name__ == 'SequenceNode':
             cluster = graph.create_cluster(str(self.seq.next()), parent=parent_cluster, label=repr(obj))    
             for n in obj.nodes:
                 self.build(n, graph, cluster)
-        elif isinstance(obj, angr.analyses.structurer.CodeNode):
+        elif type(obj).__name__ == 'CodeNode':
             cluster = graph.create_cluster(str(self.seq.next()), parent=parent_cluster, label=["CODE NODE 0x%x" % obj.addr, "Reaching condition: %s" % obj.reaching_condition]) 
             self.build(obj.node, graph, cluster)
-        elif isinstance(obj, angr.analyses.structurer.LoopNode):
+        elif type(obj).__name__ == 'LoopNode':
             cluster = graph.create_cluster(str(self.seq.next()), parent=parent_cluster, label=["LOOP NODE 0x%x" % obj.addr, "Condition:  %s" % obj.condition])
             self.build(obj.sequence_node, graph, cluster)
-        elif isinstance(obj, angr.analyses.structurer.ConditionNode):
+        elif type(obj).__name__ == 'ConditionNode':
             cluster = graph.create_cluster(str(self.seq.next()), parent=parent_cluster, label=["CONDITION NODE 0x%x" % obj.addr, "Condition:  %s" % obj.condition, "Reaching condition: %s" % obj.reaching_condition])
             if obj.true_node:
                 self.build(obj.true_node, graph, cluster)
             if obj.false_node:
                 self.build(obj.false_node, graph, cluster)
-        elif isinstance(obj, angr.analyses.structurer.BreakNode):
+        elif type(obj).__name__ == 'BreakNode':
             cluster = graph.create_cluster(str(self.seq.next()), parent=parent_cluster, label=["BREAK NODE"])
             self.build(obj.target, graph, cluster)
-        elif isinstance(obj, angr.analyses.structurer.ConditionalBreakNode):
+        elif type(obj).__name__ == 'ConditionalBreakNode':
             cluster = graph.create_cluster(str(self.seq.next()), parent=parent_cluster, label=["CONDITIONAL BREAK NODE", "Condition:  %s" % obj.condition])
             self.build(obj.target, graph, cluster)
         elif type(obj).__name__ == 'Block':
