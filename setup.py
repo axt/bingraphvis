@@ -6,7 +6,7 @@ setup(
     author_email='axt@load.hu',
     license='BSD',
     platforms=['Linux'],
-    version='0.1.0',
+    version='0.2.0',
     packages=['bingraphvis', 'bingraphvis.angr', 'bingraphvis.angr.x86', 'bingraphvis.angr.arm'],
     install_requires=[
         'pydot',
