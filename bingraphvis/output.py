@@ -151,10 +151,10 @@ class DotOutput(Output):
             pass
         elif isinstance(label, list):
             rendered = ""
+            rendered += "<BR ALIGN=\"left\"/>"
             for l in label:
-                if rendered != "":
-                    rendered += "<BR/>"
                 rendered += escape(l) 
+                rendered += "<BR ALIGN=\"left\"/>"
         else:
             rendered += escape(label)
         
@@ -190,6 +190,9 @@ class DotOutput(Output):
         ret  = "digraph \"\" {\n"
         ret += "rankdir=TB;\n"
         ret += "newrank=true;\n"
+        # for some clusters graphviz ignores the alignment specified in BR
+        # but does the alignment based on this value (possible graphviz bug)
+        ret += "labeljust=l;\n"
         
         for cluster in graph.get_clusters():
             ret += self.generate_cluster(graph, cluster)
