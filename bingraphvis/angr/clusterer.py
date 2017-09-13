@@ -57,7 +57,8 @@ class AngrStructuredClusterer(Clusterer):
         self.struct = struct
         self.block_to_cluster = {}
         self.seq = itertools.count()
-        
+        self.remove_unclustered = remove_unclustered
+
     def build(self, obj, graph, parent_cluster):
         if type(obj).__name__ == 'GraphRegion':
             cluster = graph.create_cluster(str(self.seq.next()), parent=parent_cluster, label=repr(obj))
@@ -117,3 +118,6 @@ class AngrStructuredClusterer(Clusterer):
         #for n in to_remove:
         #    graph.remove_node(n)
                 
+        if self.remove_unclustered:
+            for n in to_remove:
+                graph.remove_node(n)
