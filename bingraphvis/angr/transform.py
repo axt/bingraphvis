@@ -49,7 +49,7 @@ class AngrRemoveImports(Transformer):
         
     def import_addrs(self, project):
         eaddrs=[]
-        for _ in project.loader.main_bin.imports.values():
+        for _ in project.loader.main_object.imports.values():
             if _.resolvedby != None:
                 eaddrs.append(_.value)
         return set(eaddrs)

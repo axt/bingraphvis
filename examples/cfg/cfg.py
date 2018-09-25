@@ -11,7 +11,7 @@ import angr
 
 def angr_cfg(sample):
     proj = angr.Project(samples_dir + sample, load_options={'auto_load_libs':False})
-    main = proj.loader.main_bin.get_symbol("main")
+    main = proj.loader.main_object.get_symbol("main")
     addr = main.addr
     start_state = proj.factory.blank_state(addr=addr)
     start_state.stack_push(0x0)
