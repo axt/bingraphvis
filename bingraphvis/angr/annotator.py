@@ -98,7 +98,7 @@ class AngrPathAnnotator(EdgeAnnotator, NodeAnnotator):
     def __init__(self, path):
         super(AngrPathAnnotator, self).__init__()
         self.path = path
-        self.trace = list(path.addr_trace)
+        self.trace = list(path.history.bbl_addrs)
 
     def set_graph(self, graph):
         super(AngrPathAnnotator, self).set_graph(graph)

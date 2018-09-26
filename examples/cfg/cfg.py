@@ -15,7 +15,7 @@ def angr_cfg(sample):
     addr = main.rebased_addr
     start_state = proj.factory.blank_state(addr=addr)
     start_state.stack_push(0x0)
-    cfg = proj.analyses.CFGAccurate(fail_fast=True, starts=[addr], initial_state=start_state, context_sensitivity_level=1, keep_state=True, normalize=False)
+    cfg = proj.analyses.CFGFast(fail_fast=True, function_starts=[addr], base_state=start_state, normalize=False)
 
     vis = AngrVisFactory().default_cfg_pipeline(cfg, asminst=True, vexinst=False)
     vis.set_output(DotOutput(sample + '_angr_asm', format="png"))
