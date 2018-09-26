@@ -116,7 +116,11 @@ class AngrPathAnnotator(EdgeAnnotator, NodeAnnotator):
     #TODO add caching
     #TODO not sure if this is valid
     def node_hit(self, node):
-        ck = list(node.callstack_key)
+
+        if node.callstack_key:
+            ck = list(node.callstack_key)
+        else:
+            ck = []
         ck.append(node.addr)
         rtrace = list(reversed(self.trace))
         

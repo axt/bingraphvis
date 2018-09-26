@@ -426,8 +426,9 @@ class AngrCFGDebugInfo(Content):
         node = n.obj
 
         data = []
-    
-        self.add_line(data, "callstack_key: " + str([safehex(k) for k in node.callstack_key]))
+
+        if node.callstack_key:
+            self.add_line(data, "callstack_key: " + str([safehex(k) for k in node.callstack_key]))
         self.add_line(data, "predecessors:")
         for k in node.predecessors:
             self.add_line(data, " - " + str(k))
