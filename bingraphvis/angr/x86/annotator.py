@@ -10,7 +10,7 @@ class AngrColorEdgesAsmX86(EdgeAnnotator):
     EDGECOLOR_CONDITIONAL_FALSE = 'red'
     EDGECOLOR_UNCONDITIONAL     = 'blue'
     EDGECOLOR_CALL              = 'black'
-    EDGECOLOR_RET               = 'grey'
+    EDGECOLOR_RET               = 'purple'
     EDGECOLOR_UNKNOWN           = 'yellow'
 
     def __init__(self):
