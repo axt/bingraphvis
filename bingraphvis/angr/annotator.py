@@ -337,17 +337,17 @@ class AngrCommentsAsm(ContentAnnotator):
                 label = ''
                 if action.type == 'mem' or action.type == 'reg':
                     if isinstance(action.data.ast, int) or action.data.ast.concrete:
-                        d = state.se.any_int(action.data.ast)
+                        d = state.se.eval(action.data.ast)
                         if d in self.project.kb.labels:
                             label += 'data=' + self.project.kb.labels[d] + ' '
                     if isinstance(action.addr.ast, int) or action.addr.ast.concrete:
-                        a = state.se.any_int(action.addr.ast)
+                        a = state.se.eval(action.addr.ast)
                         if a in self.project.kb.labels:
                             label += 'addr=' + self.project.kb.labels[a] + ' '
 
                 if action.type == 'exit':
                     if action.target.ast.concrete:
-                        a = state.se.any_int(action.target.ast)
+                        a = state.se.eval(action.target.ast)
                         if a in self.project.kb.labels:
                             label += self.project.kb.labels[a] + ' '
 
