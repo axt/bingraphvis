@@ -45,7 +45,7 @@ class AngrCallstackKeyClusterer(Clusterer):
         for n in cgraph.nodes():
             in_edges = cgraph.in_edges(n)
             if len(in_edges) == 1:
-                s,t = in_edges[0]
+                s,t = list(in_edges)[0]
                 scluster = graph.get_cluster(s)
                 tcluster = graph.get_cluster(t)
                 tcluster.parent = scluster
