@@ -49,7 +49,7 @@ class AngrColorEdgesVex(EdgeAnnotator):
     EDGECOLOR_CONDITIONAL_FALSE = 'red'
     EDGECOLOR_UNCONDITIONAL     = 'blue'
     EDGECOLOR_CALL              = 'black'
-    EDGECOLOR_RET               = 'grey'
+    EDGECOLOR_RET               = 'purple'
     EDGECOLOR_UNKNOWN           = 'yellow'
 
     def __init__(self):
@@ -77,15 +77,15 @@ class AngrColorEdgesVex(EdgeAnnotator):
                     if len(vex.constant_jump_targets) > 1:
                         if len (vex.next.constants) == 1:
                             if edge.dst.obj.addr == vex.next.constants[0].value:
-                                edge.color=self.EDGECOLOR_CONDITIONAL_FALSE
+                                edge.color = self.EDGECOLOR_CONDITIONAL_FALSE
                             else:
-                                edge.color=self.EDGECOLOR_CONDITIONAL_TRUE
+                                edge.color = self.EDGECOLOR_CONDITIONAL_TRUE
                         else:
-                            edge.color=self.EDGECOLOR_UNKNOWN
+                            edge.color = self.EDGECOLOR_UNKNOWN
                     else:
-                        edge.color=self.EDGECOLOR_UNCONDITIONAL
+                        edge.color = self.EDGECOLOR_UNCONDITIONAL
                 else:
-                    edge.color=self.EDGECOLOR_UNCONDITIONAL
+                    edge.color = self.EDGECOLOR_UNCONDITIONAL
             else:
                 #TODO warning
                 edge.color = self.EDGECOLOR_UNKNOWN
@@ -98,7 +98,7 @@ class AngrPathAnnotator(EdgeAnnotator, NodeAnnotator):
     def __init__(self, path):
         super(AngrPathAnnotator, self).__init__()
         self.path = path
-        self.trace = list(path.addr_trace)
+        self.trace = list(path.history.bbl_addrs)
 
     def set_graph(self, graph):
         super(AngrPathAnnotator, self).set_graph(graph)
@@ -116,7 +116,11 @@ class AngrPathAnnotator(EdgeAnnotator, NodeAnnotator):
     #TODO add caching
     #TODO not sure if this is valid
     def node_hit(self, node):
-        ck = list(node.callstack_key)
+
+        if node.callstack_key:
+            ck = list(node.callstack_key)
+        else:
+            ck = []
         ck.append(node.addr)
         rtrace = list(reversed(self.trace))
         
@@ -337,17 +341,17 @@ class AngrCommentsAsm(ContentAnnotator):
                 label = ''
                 if action.type == 'mem' or action.type == 'reg':
                     if isinstance(action.data.ast, int) or action.data.ast.concrete:
-                        d = state.se.any_int(action.data.ast)
+                        d = state.se.eval(action.data.ast)
                         if d in self.project.kb.labels:
                             label += 'data=' + self.project.kb.labels[d] + ' '
                     if isinstance(action.addr.ast, int) or action.addr.ast.concrete:
-                        a = state.se.any_int(action.addr.ast)
+                        a = state.se.eval(action.addr.ast)
                         if a in self.project.kb.labels:
                             label += 'addr=' + self.project.kb.labels[a] + ' '
 
                 if action.type == 'exit':
                     if action.target.ast.concrete:
-                        a = state.se.any_int(action.target.ast)
+                        a = state.se.eval(action.target.ast)
                         if a in self.project.kb.labels:
                             label += self.project.kb.labels[a] + ' '
 

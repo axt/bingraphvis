@@ -31,7 +31,6 @@ class OpenreilAsm(Content):
                 continue
             
             mnem, args = ins.get_attr(pyopenreil.IR.IATTR_ASM)
-            
             data.append({
                 'addr': {
                     'content': "0x%08x:" % ins.ir_addr()[0],

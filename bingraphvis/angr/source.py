@@ -1,5 +1,5 @@
 
-from ..base import *
+from ..base import Source, VisError, Node, Edge
 from .clusterer import AngrStructuredClusterer
 import angr
 import networkx

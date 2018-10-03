@@ -21,8 +21,6 @@ class AngrCFGHead(Content):
         if node.no_ret:
             attributes.append("NORET")
         
-        label = "{:#08x} ({:#08x}) {} {}".format(node.addr, node.function_address, node.name, ' '.join(attributes))
-        
         n.content[self.name] = {
             'data': [{
                 'addr': {
@@ -98,7 +96,6 @@ class AngrCGHead(Content):
         super(AngrCGHead, self).__init__('head', ['name','addr'])
         
     def gen_render(self, n):
-        node = n.obj
         n.content[self.name] = {
             'data': [{
                 'addr': {
@@ -117,7 +114,6 @@ class AngrCommonHead(Content):
         super(AngrCommonHead, self).__init__('head', ['name'])
         
     def gen_render(self, n):
-        node = n.obj
         if hasattr(n.obj, 'name'):
             name = n.obj.name
         else:
@@ -216,7 +212,7 @@ class AngrAsm(Content):
         node = n.obj
         
         #CFG
-        if type(node).__name__ == 'CFGNode':
+        if type(node).__name__ == 'CFGNode' or type(node).__name__ == 'CFGNodeA':
             is_syscall = node.is_syscall
             is_simprocedure = node.is_simprocedure
             addr = node.addr
@@ -333,7 +329,7 @@ class AngrVex(Content):
         node = n.obj
         
         #CFG
-        if type(node).__name__ == 'CFGNode':
+        if type(node).__name__ == 'CFGNode' or type(node).__name__ == 'CFGNodeA':
             is_syscall = node.is_syscall
             is_simprocedure = node.is_simprocedure
             addr = node.addr
@@ -357,7 +353,6 @@ class AngrVex(Content):
             is_syscall = False
             is_simprocedure = False
             addr = node.addr
-            max_size = node.size
             size = None
             stmt_idx = None
         elif type(node).__name__ == 'HookNode':
@@ -367,7 +362,6 @@ class AngrVex(Content):
         # AIL
         elif type(node).__name__ == 'Block':
             addr = node.addr
-            max_size = None
             size = None
             is_syscall = False
             is_simprocedure = False
@@ -383,7 +377,7 @@ class AngrVex(Content):
 
         data = []
         for j, s in enumerate(vex.statements):
-            if stmt_idx == None  or stmt_idx == j:
+            if stmt_idx == None or stmt_idx == j:
                 data.append({
                     'addr': {
                         'content': "%d:" % j,
@@ -432,8 +426,9 @@ class AngrCFGDebugInfo(Content):
         node = n.obj
 
         data = []
-    
-        self.add_line(data, "callstack_key: " + str([safehex(k) for k in node.callstack_key]))
+
+        if node.callstack_key:
+            self.add_line(data, "callstack_key: " + str([safehex(k) for k in node.callstack_key]))
         self.add_line(data, "predecessors:")
         for k in node.predecessors:
             self.add_line(data, " - " + str(k))
@@ -441,7 +436,7 @@ class AngrCFGDebugInfo(Content):
         for k in node.successors:
             self.add_line(data, " - " + str(k))
         if hasattr(node, 'final_states'):
-            self.add_line(data, "final_states: " + str(map(lambda k:hex(k.se.any_int(k.regs.ip)), node.final_states)))
+            self.add_line(data, "final_states: " + str(map(lambda k:hex(k.se.eval(k.regs.ip)), node.final_states)))
 
         self.add_line(data, "return_target: " + safehex(node.return_target))
         self.add_line(data, "looping_times: " + str(node.looping_times))
