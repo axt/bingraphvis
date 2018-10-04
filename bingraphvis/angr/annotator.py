@@ -1,6 +1,6 @@
 
 from ..base import *
-
+from ..style import get_style
 import capstone
 import pyvex
 
@@ -45,31 +45,25 @@ class AngrColorEntry(NodeAnnotator):
                 node.fillcolor = '#ffffcc'
 
 class AngrColorEdgesVex(EdgeAnnotator):
-    EDGECOLOR_CONDITIONAL_TRUE  = 'green'
-    EDGECOLOR_CONDITIONAL_FALSE = 'red'
-    EDGECOLOR_UNCONDITIONAL     = 'blue'
-    EDGECOLOR_CALL              = 'black'
-    EDGECOLOR_RET               = 'purple'
-    EDGECOLOR_UNKNOWN           = 'yellow'
-
     def __init__(self):
         super(AngrColorEdgesVex, self).__init__()
 
 
     def annotate_edge(self, edge):
+        style = get_style()
         vex = None
         if 'jumpkind' in edge.meta:
             jk = edge.meta['jumpkind']
             if jk == 'Ijk_Ret':
-                edge.color = self.EDGECOLOR_RET
+                style.make_edge(edge, 'RET')
             elif jk == 'Ijk_FakeRet':
-                edge.color = self.EDGECOLOR_RET
-                edge.style = 'dashed'
+                style.make_edge(edge, 'FAKE_RET')
             elif jk == 'Ijk_Call':
-                edge.color = self.EDGECOLOR_CALL
+                style.make_edge(edge, 'CALL')
                 if 'vex' in edge.src.content:
                     vex = edge.src.content['vex']['vex']
                     if len (vex.next.constants) == 1 and vex.next.constants[0].value != edge.dst.obj.addr:
+                        #TODO
                         edge.style='dotted'
             elif jk == 'Ijk_Boring':
                 if 'vex' in edge.src.content:
@@ -77,20 +71,20 @@ class AngrColorEdgesVex(EdgeAnnotator):
                     if len(vex.constant_jump_targets) > 1:
                         if len (vex.next.constants) == 1:
                             if edge.dst.obj.addr == vex.next.constants[0].value:
-                                edge.color = self.EDGECOLOR_CONDITIONAL_FALSE
+                                style.make_edge(edge, 'CONDITIONAL_FALSE')
                             else:
-                                edge.color = self.EDGECOLOR_CONDITIONAL_TRUE
+                                style.make_edge(edge, 'CONDITIONAL_TRUE')
                         else:
-                            edge.color = self.EDGECOLOR_UNKNOWN
+                            style.make_edge(edge, 'UNKNOWN')
                     else:
-                        edge.color = self.EDGECOLOR_UNCONDITIONAL
+                        style.make_edge(edge, 'UNCONDITIONAL')
                 else:
-                    edge.color = self.EDGECOLOR_UNCONDITIONAL
+                    style.make_edge(edge, 'UNCONDITIONAL')
             else:
                 #TODO warning
-                edge.color = self.EDGECOLOR_UNKNOWN
+                style.make_edge(edge, 'UNKNOWN')
         else:
-            edge.color = self.EDGECOLOR_UNKNOWN
+            style.make_edge(edge, 'UNKNOWN')
 
 
 class AngrPathAnnotator(EdgeAnnotator, NodeAnnotator):

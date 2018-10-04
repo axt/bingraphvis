@@ -1,55 +1,48 @@
 
 from ...base import *
+from ...style import get_style
 import capstone
 from capstone.x86 import *
 
 
 
 class AngrColorEdgesAsmX86(EdgeAnnotator):
-    EDGECOLOR_CONDITIONAL_TRUE  = 'green'
-    EDGECOLOR_CONDITIONAL_FALSE = 'red'
-    EDGECOLOR_UNCONDITIONAL     = 'blue'
-    EDGECOLOR_CALL              = 'black'
-    EDGECOLOR_RET               = 'purple'
-    EDGECOLOR_UNKNOWN           = 'yellow'
-
     def __init__(self):
         super(AngrColorEdgesAsmX86, self).__init__()
 
     def annotate_edge(self, edge):
+        style = get_style()
         if 'jumpkind' in edge.meta:
             jk = edge.meta['jumpkind']
             if jk == 'Ijk_Ret':
-                edge.color = self.EDGECOLOR_RET
+                style.make_edge(edge, 'RET')
             elif jk == 'Ijk_FakeRet':
-                edge.color = self.EDGECOLOR_RET
-                edge.style = 'dotted'
+                style.make_edge(edge, 'FAKE_RET')
             elif jk == 'Ijk_Call':
-                edge.color = self.EDGECOLOR_CALL
+                style.make_edge(edge, 'CALL')
             elif jk == 'Ijk_Boring':
                 if 'asm' in edge.src.content:
                     asm = edge.src.content['asm']
                     if 'data' in asm and len(asm['data']) > 0:
                         last = edge.src.content['asm']['data'][-1]
                         if last['mnemonic']['content'].find('jmp') == 0:
-                            edge.color = self.EDGECOLOR_UNCONDITIONAL
+                            style.make_edge(edge, 'UNCONDITIONAL')
                         elif last['mnemonic']['content'].find('j') == 0:
                             try:
                                 if int(last['operands']['content'],16) == edge.dst.obj.addr:
-                                    edge.color = self.EDGECOLOR_CONDITIONAL_TRUE
+                                    style.make_edge(edge, 'CONDITIONAL_TRUE')
                                 else:
-                                    edge.color = self.EDGECOLOR_CONDITIONAL_FALSE
+                                    style.make_edge(edge, 'CONDITIONAL_FALSE')
                             except Exception as e:
                                 #TODO warning
-                                edge.color = self.EDGECOLOR_UNKNOWN
+                                style.make_edge(edge, 'UNKNOWN')
                         else:
-                            edge.color = self.EDGECOLOR_UNCONDITIONAL
-                            edge.style = 'dashed'
+                            style.make_edge(edge, 'NEXT')
                     else:
-                        edge.color = self.EDGECOLOR_UNKNOWN        
+                        style.make_edge(edge, 'UNKNOWN')
             else:
                 #TODO warning
-                edge.color = self.EDGECOLOR_UNKNOWN
+                style.make_edge(edge, 'UNKNOWN')
 
 class AngrX86ArrayAccessAnnotator(ContentAnnotator):
     def __init__(self):

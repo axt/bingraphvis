@@ -1,34 +1,27 @@
 
 from ..base import *
+from ..style import get_style
 import pyopenreil
 
 class OpenreilColorEdgesAsm(EdgeAnnotator):
-    EDGECOLOR_CONDITIONAL_TRUE  = 'green'
-    EDGECOLOR_CONDITIONAL_FALSE = 'red'
-    EDGECOLOR_UNCONDITIONAL     = 'blue'
-    EDGECOLOR_CALL              = 'black'
-    EDGECOLOR_RET               = 'purple'
-    EDGECOLOR_UNKNOWN           = 'yellow'
-
     def __init__(self):
         super(OpenreilColorEdgesAsm, self).__init__()
 
-
     def annotate_edge(self, edge):
+        style = get_style()
         if 'asm' in edge.src.content:
             last = edge.src.content['asm']['data'][-1]
 
             if last['mnemonic']['content'].find('jmp') == 0:
-                edge.color = self.EDGECOLOR_UNCONDITIONAL
+                style.make_edge(edge, 'UNCONDITIONAL')
             elif last['mnemonic']['content'].find('j') == 0:
                 try:
                     if int(last['operands']['content'],16) + last['_addr'] == edge.dst.obj.item.ir_addr[0]:
-                        edge.color = self.EDGECOLOR_CONDITIONAL_TRUE
+                        style.make_edge(edge, 'CONDITIONAL_TRUE')
                     else:
-                        edge.color = self.EDGECOLOR_CONDITIONAL_FALSE
+                        style.make_edge(edge, 'CONDITIONAL_FALSE')
                 except Exception as e:
                     #TODO warning
-                    edge.color = self.EDGECOLOR_UNKNOWN
+                    style.make_edge(edge, 'UNKNOWN')
             else:
-                edge.color = self.EDGECOLOR_UNCONDITIONAL
-                edge.style = 'dashed'
+                style.make_edge(edge, 'NEXT')
