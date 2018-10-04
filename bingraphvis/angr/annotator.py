@@ -103,7 +103,7 @@ class AngrPathAnnotator(EdgeAnnotator, NodeAnnotator):
     def set_graph(self, graph):
         super(AngrPathAnnotator, self).set_graph(graph)
         self.vaddr = self.valid_addrs()        
-        ftrace = filter(lambda _: _ in self.vaddr, self.trace)
+        ftrace = list(filter(lambda _: _ in self.vaddr, self.trace))
         self.edges_hit = set(zip(ftrace[:-1], ftrace[1:]))
         
             
@@ -341,17 +341,17 @@ class AngrCommentsAsm(ContentAnnotator):
                 label = ''
                 if action.type == 'mem' or action.type == 'reg':
                     if isinstance(action.data.ast, int) or action.data.ast.concrete:
-                        d = state.se.eval(action.data.ast)
+                        d = state.solver.eval(action.data.ast)
                         if d in self.project.kb.labels:
                             label += 'data=' + self.project.kb.labels[d] + ' '
                     if isinstance(action.addr.ast, int) or action.addr.ast.concrete:
-                        a = state.se.eval(action.addr.ast)
+                        a = state.solver.eval(action.addr.ast)
                         if a in self.project.kb.labels:
                             label += 'addr=' + self.project.kb.labels[a] + ' '
 
                 if action.type == 'exit':
                     if action.target.ast.concrete:
-                        a = state.se.eval(action.target.ast)
+                        a = state.solver.eval(action.target.ast)
                         if a in self.project.kb.labels:
                             label += self.project.kb.labels[a] + ' '
 

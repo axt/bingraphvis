@@ -9,7 +9,6 @@ class AngrRemovePathTerminator(Transformer):
     def transform(self, graph):
         remove = []
         for n in graph.nodes:
-            
             if hasattr(n.obj, 'is_simprocedure') and n.obj.is_simprocedure and n.obj.simprocedure_name == 'PathTerminator':
                 remove.append(n)
         for r in remove:
@@ -54,6 +53,7 @@ class AngrRemoveImports(Transformer):
         return set(eaddrs)
 
     def transform(self, graph):
+        return
         remove = set()
         for n in graph.nodes:
             if n.obj.addr in self.eaddrs:
@@ -70,8 +70,8 @@ class AngrRemoveImports(Transformer):
                             break
                     if not found:
                         remove.add(c)
-        for r in remove:
-            graph.remove_node(r)
+        #for r in remove:
+        #    graph.remove_node(r)
 
 
 

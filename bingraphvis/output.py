@@ -53,7 +53,7 @@ class DotOutput(Output):
         a.update(default)
         a.update(attrs)
         r = []
-        for k,v in a.iteritems():
+        for k,v in a.items():
             r.append(k+"="+v)
         
         return "["+", ".join(r)+"]"
@@ -170,7 +170,7 @@ class DotOutput(Output):
             if cluster.fillcolor:
                 ret +='color="%s";\n' % cluster.fillcolor
                 
-        nodes = filter(lambda n:n.cluster == cluster, graph.nodes)
+        nodes = list(filter(lambda n:n.cluster == cluster, graph.nodes))
         
         if len(nodes) > 0 and hasattr(nodes[0].obj, 'addr'):
             nodes = sorted(nodes, key=lambda n: n.obj.addr)
@@ -198,7 +198,7 @@ class DotOutput(Output):
             ret += self.generate_cluster(graph, cluster)
             
         ret += self.generate_cluster(graph, None)
-                
+
         for e in graph.edges:
             ret += self.render_edge(e) + "\n"
             

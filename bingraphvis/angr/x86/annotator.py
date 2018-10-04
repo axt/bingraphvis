@@ -39,7 +39,7 @@ class AngrColorEdgesAsmX86(EdgeAnnotator):
                                     edge.color = self.EDGECOLOR_CONDITIONAL_TRUE
                                 else:
                                     edge.color = self.EDGECOLOR_CONDITIONAL_FALSE
-                            except Exception, e:
+                            except Exception as e:
                                 #TODO warning
                                 edge.color = self.EDGECOLOR_UNKNOWN
                         else:
@@ -116,7 +116,7 @@ class AngrX86CommentsAsm(ContentAnnotator):
                         if fname.find('_Z') == 0:
                             try:
                                 fname = self.demangle([fname])[0]
-                            except Exception, e:
+                            except Exception as e:
                                 pass
                     
                     if fname:

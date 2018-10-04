@@ -31,7 +31,7 @@ from pyopenreil.utils import bin_BFD
 def openreil_cfg(sample):
     reader = bin_BFD.Reader(samples_dir + sample)
     addr = None
-    for k,v in reader.bfd.symbols.iteritems():
+    for k,v in reader.bfd.symbols.items():
         if v.name == 'main':
             addr = k
 

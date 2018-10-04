@@ -167,7 +167,7 @@ class Graph(object):
     def create_cluster(self, key, parent=None, nodes=None, label=None, visible=True):
         cluster = Cluster(key, parent, nodes, label, visible)
         self.clusters[key] = cluster
-        self.seqmap[key] = self.seqctr.next()
+        self.seqmap[key] = next(self.seqctr)
         return cluster
 
     def get_cluster(self, key):
@@ -177,7 +177,7 @@ class Graph(object):
             return None
     
     def get_clusters(self, parent=None):
-        return filter(lambda c:c.parent==parent, self.clusters.values())
+        return list(filter(lambda c:c.parent==parent, self.clusters.values()))
         
     def add_node(self, node):
         self.nodes.add(node)
@@ -189,7 +189,7 @@ class Graph(object):
         
     def remove_node(self, node):
         self.nodes.remove(node)
-        self.edges = filter(lambda edge: edge.src != node and edge.dst != node, self.edges)
+        self.edges = list(filter(lambda edge: edge.src != node and edge.dst != node, self.edges))
         
     def remove_edge(self, edge):
         self.edges.remove(edge)
@@ -201,8 +201,8 @@ class Graph(object):
         self.edges = new_graph.edges
 
     def filtered_view(self, node_filter):
-        nodes = filter(lambda _: node_filter(_), self.nodes)
-        edges = filter(lambda edge: node_filter(edge.src) and node_filter(edge.dst), self.edges)
+        nodes = list(filter(lambda _: node_filter(_), self.nodes))
+        edges = list(filter(lambda edge: node_filter(edge.src) and node_filter(edge.dst), self.edges))
         return Graph(nodes, edges)
     
 

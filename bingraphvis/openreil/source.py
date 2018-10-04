@@ -12,7 +12,7 @@ class OpenreilCFGSource(Source):
         if not isinstance(obj, pyopenreil.REIL.CFGraph):
             raise VisError("Unknown input type '%s'" % type(obj))
         
-        for k,n in obj.nodes.iteritems():
+        for k,n in obj.nodes.items():
             if n not in self.lookup:
                 wn = Node(self.seq, n)
                 self.seq += 1

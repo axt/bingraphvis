@@ -1,7 +1,7 @@
 
 from ..base import *
 import angr
-from simuvex import SimRegisterVariable, SimMemoryVariable, SimTemporaryVariable, SimConstantVariable, SimStackVariable
+from angr.sim_variable import SimRegisterVariable, SimMemoryVariable, SimTemporaryVariable, SimConstantVariable, SimStackVariable
 
 
 def safehex(val):
@@ -257,8 +257,8 @@ class AngrAsm(Content):
 
         try:
             insns = self.project.factory.block(addr=addr, size=max_size, num_inst=size).capstone.insns
-        except Exception, e:
-            print e
+        except Exception as e:
+            print(e)
             #TODO add logging
             insns = []
 
@@ -436,12 +436,12 @@ class AngrCFGDebugInfo(Content):
         for k in node.successors:
             self.add_line(data, " - " + str(k))
         if hasattr(node, 'final_states'):
-            self.add_line(data, "final_states: " + str(map(lambda k:hex(k.se.eval(k.regs.ip)), node.final_states)))
-
-        self.add_line(data, "return_target: " + safehex(node.return_target))
-        self.add_line(data, "looping_times: " + str(node.looping_times))
+            self.add_line(data, "final_states: " + str(map(lambda k:hex(k.solver.eval(k.regs.ip)), node.final_states)))
+#        print(dir(node))
+#        self.add_line(data, "return_target: " + safehex(node.return_target))
+#        self.add_line(data, "looping_times: " + str(node.looping_times))
         self.add_line(data, "size: " + str(node.size))
-            
+
         n.content[self.name] = {
             'data': data,
             'columns': self.get_columns(),
@@ -450,7 +450,7 @@ class AngrCFGDebugInfo(Content):
 
 
 class AngrKbFunctionDetails(Content):
-        
+
     def __init__(self):
         super(AngrKbFunctionDetails, self).__init__('debug_info', ['prop', 'val'])
 
