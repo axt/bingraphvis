@@ -216,3 +216,18 @@ class DotOutput(Output):
             dotfile = XDot(ret)
             dotfile.write("{}.{}".format(self.fname, self.format), format=self.format)
 
+
+class DumpOutput(Output):
+
+    def __init__(self):
+        super(DumpOutput, self).__init__()
+
+    def generate(self, graph):
+        ret = ""
+        for e in graph.edges:
+            ret += self.render_edge(e) + "\n"
+        print(ret)
+
+    def render_edge(self, e):
+        return "%s %s %s" % (hex(e.src.obj.addr), hex(e.dst.obj.addr), e.meta['jumpkind'])
+        
