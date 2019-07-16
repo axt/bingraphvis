@@ -212,7 +212,7 @@ class AngrAsm(Content):
         node = n.obj
         
         #CFG
-        if type(node).__name__ == 'CFGNode' or type(node).__name__ == 'CFGNodeA':
+        if type(node).__name__ == 'CFGNode' or type(node).__name__ == 'CFGNodeA' or type(node).__name__ == 'CFGENode':
             is_syscall = node.is_syscall
             is_simprocedure = node.is_simprocedure
             addr = node.addr
@@ -329,7 +329,7 @@ class AngrVex(Content):
         node = n.obj
         
         #CFG
-        if type(node).__name__ == 'CFGNode' or type(node).__name__ == 'CFGNodeA':
+        if type(node).__name__ == 'CFGNode' or type(node).__name__ == 'CFGNodeA' or type(node).__name__ == 'CFGENode':
             is_syscall = node.is_syscall
             is_simprocedure = node.is_simprocedure
             addr = node.addr
