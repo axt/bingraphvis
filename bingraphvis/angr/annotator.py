@@ -266,7 +266,7 @@ class AngrActionAnnotatorVex(ContentAnnotator):
         content.add_column_after('action_data')
         
     def annotate_content(self, node, content):
-        from simuvex.s_action import SimActionData
+        from angr.state_plugins.sim_action import SimActionData
 
         if node.obj.is_simprocedure or node.obj.is_syscall:
             return
