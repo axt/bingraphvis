@@ -381,8 +381,9 @@ class AngrCommentsDataRef(ContentAnnotator):
 
         comments_by_addr = {}
         for dr in node.obj.accessed_data_references:
-            if dr.sort == 'string':
-                comments_by_addr[dr.insn_addr] = dr.content
+            comments_by_addr[dr.ins_addr] = str(dr)
+            if dr.memory_data.sort == 'string':
+                comments_by_addr[dr.ins_addr] = str(dr.memory_data.content)
 
         for k in content['data']:
             ins = k['_ins']
